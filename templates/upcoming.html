@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  {# TODO: Create a better gigs class, and display them better here - sorry about the awful styling! #}
+  {% for gig in gigs %}
+    <h1>{{ gig['name'] }}</h1>
+    <span class="badge badge-primary">{{ gig['name'] }}</span>
+    <span class="badge badge-primary">{{ gig['date'] }}</span>
+    <span class="badge badge-secondary">{{ gig['location'] }}</span>
+    <hr>
+  {% endfor %}
+{% endblock content %}

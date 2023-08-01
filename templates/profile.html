@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  This page is for your profile
+  {% if current_user.is_authenticated %}
+    {{ current_user.email }}
+    {{ current_user.username }}
+  {% else %}
+    Login
+  {% endif %}
+  <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
+{% endblock content %}

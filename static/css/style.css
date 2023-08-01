@@ -1,0 +1,30 @@
+:root {
+  --black: #0D1A1A;
+  --dark-green: #183E3C;
+  --red: #B73A2A;
+  --light-green: #6B9E84;
+  --cream: #EBD5BE;
+  --white: #FFFFFF;
+
+  --ai-dark-green: #0e2929;
+  --ai-green-gray: #4c5d5d;
+  --ai-gray: #738383;
+  --ai-light-green: #7cab94;
+  --ai-red: #c44f38;
+}
+
+h1 {
+  border: 2px #eee solid;
+  color: var(--red);
+  text-align:center;
+  padding: 10px
+}
+
+.backgroundFilled {
+  background-color: var(--ai-dark-green);
+  color: var(--white);
+}
+
+a {
+  color: var(--ai-gray)
+}

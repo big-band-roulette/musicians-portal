@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta name='keywords' content="Big, Band, Jazz">
+    <meta name='description'
+          content="A Cambridge Music Society bringing Jazz Musicians Together">
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+    <!-- Add icon library -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title>
+      {% block title %}
+        Big Band Roulette
+      {% endblock title %}
+    </title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <a class="navbar-brand" href='{{ url_for("profile") }}'>
+        <img src="{{ url_for('static',filename='images/logo_colour.svg') }}"
+             height="50"
+             width="50"
+             alt="">
+      </a>
+      <button class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        {% if current_user.is_authenticated %}
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href='{{ url_for("auditions") }}'>Auditions</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href='{{ url_for("profile") }}'>Profile</a>
+            </li>
+            {% if current_user.has_role("auditioned") %}
+              <li class="nav-item active">
+                <a class="nav-link" href='{{ url_for("upcoming") }}'>Upcoming</a>
+              </li>
+            {% endif %}
+          </ul>
+        {% endif %}
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href='{{ url_for("security.login") }}'>
+              {% if current_user.is_authenticated %}
+                {{ current_user.email }}
+              {% else %}
+                Login
+              {% endif %}
+            </a>
+          </li>
+          {% if current_user.is_authenticated %}
+            <li class="nav-item active">
+              <a class="nav-link" href='{{ url_for("security.logout") }}'>logout</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    <div class="container bg-image">
+      {% block content %}
+      {% endblock content %}
+    </div>
+  </body>
+  <!-- Footer -->
+  <footer class="page-footer font-small blue pt-4 backgroundFilled mt-3">
+    <!-- Footer Links -->
+    <div class="container-fluid text-center text-md-left">
+      <!-- Grid row -->
+      <div class="row">
+        <!-- Grid column -->
+        <div class="col-md-6 mt-md-0 mt-3">
+          <!-- Content -->
+          <h5 class="text-uppercase">Big Band Roulette</h5>
+          <p>Portal designed by Carl Ashworth.</p>
+        </div>
+        <!-- Grid column -->
+        <hr class="clearfix w-100 d-md-none pb-3">
+        <!-- Grid column -->
+        <div class="col-md-3 mb-md-0 mb-3">
+          <!-- Links -->
+          <h5 class="text-uppercase">Contact</h5>
+          <ul class="list-unstyled">
+            <li>
+              <a href="mailto:ca541@cam.ac.uk?subject=BigBandRoulette&body=Dear%20Big%20Band%20Roulette,">ca541@cam.ac.uk</a>
+            </li>
+            <li>
+              <a href="#!">Link 2</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Grid column -->
+        <!-- Grid column -->
+        <div class="col-md-3 mb-md-0 mb-3">
+          <!-- Links -->
+          <h5 class="text-uppercase">Links</h5>
+          <ul class="list-unstyled">
+            <li>
+              <i class="fa fa-facebook"></i>
+            </li>
+            <li>
+              <i class="fa fa-youtube"></i>
+            </li>
+            <li>
+              <i class="fa fa-twitter"></i>
+            </li>
+          </ul>
+        </div>
+        <!-- Grid column -->
+      </div>
+      <!-- Grid row -->
+    </div>
+    <!-- Footer Links -->
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© Big Band Roulette 2023</div>
+    <!-- Copyright -->
+  </footer>
+  <!-- Footer -->
+</html>

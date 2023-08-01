@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Auditions</h1>
+  This page is for the band auditions. Please click to sign up to an audition. Please remember that you only need to audition once, but if you would like to increase your weighting, you are welcome to audition again! The upcoming auditons are:
+  <hr>
+  {# TODO: Add in better details about each audition, add things like only being able to sign up for one audition at once etc #}
+  {% for audition in auditions %}
+    <form method='post' action='{{ url_for("update_signup") }}'>
+      <input type="submit"
+             value='{{ audition["name"] }}'
+             name='{{ audition["id"] }}'>
+    </form>
+    Audition name = <span class="badge badge-primary">{{ audition['name'] }}</span>
+    Audition id = <span class="badge badge-primary">{{ audition['id'] }}</span>
+    Signed Up = <span class="badge badge-secondary">{{ audition['signed_up'] }}</span>
+    <hr>
+  {% endfor %}
+  <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
+{% endblock content %}
