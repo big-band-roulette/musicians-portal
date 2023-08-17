@@ -4,7 +4,7 @@ from flask import Flask, flash, url_for, redirect,render_template, request
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session, init_db
-from models import User, Role, Audition, Signup, Gigs
+from models import User, Role, Audition, AuditionUserLink, Event
 from dataSimulator import add_simulated_data
 import secrets
 # Create app
@@ -64,7 +64,7 @@ app.security = Security(app, user_datastore)
 def auditions():
     user_id = current_user.id
     auditions = Audition.query.all()
-    signups = Signup.query.filter_by(user_id=user_id).all()
+    signups = AuditionUserLink.query.filter_by(user_id=user_id).all()
     signed_up_ids = [signup.audition_id for signup in signups]
 
     labelled_auditions = [
@@ -87,7 +87,7 @@ def profile():
 @app.route('/upcoming')
 @roles_required('auditioned')
 def upcoming():
-    gigs = Gigs.query.all()
+    gigs = Event.query.all()
     return render_template('upcoming.html',gigs=gigs)
 
 
@@ -100,11 +100,11 @@ def update_signup():
     user_id = current_user.id
 
     # Retrieve the Signup object for the current user and audition
-    signup = Signup.query.filter_by(user_id=user_id, audition_id=audition_id).first()
+    signup = AuditionUserLink.query.filter_by(user_id=user_id, audition_id=audition_id).first()
 
     # If the signup doesn't exist, create a new one
     if not signup:
-        signup = Signup(user_id=user_id, audition_id=audition_id)
+        signup = AuditionUserLink(user_id=user_id, audition_id=audition_id)
         db_session.add(signup)
     else:
         #remove the signup
@@ -113,6 +113,12 @@ def update_signup():
     db_session.commit()
     flash('Signup status updated successfully')
     return redirect(url_for('auditions'))
+
+
+@app.route('/admin')
+@roles_required('admin')
+def adminInterface():
+    return render_template('adminInterface.html')
 
 
 # one time setup

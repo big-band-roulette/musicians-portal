@@ -5,7 +5,7 @@ from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy import Boolean, DateTime, Column, Integer, \
                     String, ForeignKey
 
-# TODO: Check that these models have all the needed fields
+# TODO: Check that each event doesn't need it's own table with all the people playing in it
 
 # !Important: RolesUsers, Role and User are required by flask security. We can add user fields if needed
 class RolesUsers(Base):
@@ -40,41 +40,66 @@ class User(Base, UserMixin):
     tf_phone_number = Column(String(128), nullable=True)
     tf_primary_method = Column(String(64), nullable=True)
     tf_totp_secret = Column(String(255), nullable=True)
-    
-class PlayersInstruments(Base):
-    __tablename__ = 'players_instruments'
-    id = Column(Integer, primary_key=True,autoincrement=True)
-    playerID = Column('playerID',Integer(),ForeignKey('user.id'))
-    instrumentID = Column('instrumentID',Integer(),ForeignKey('instruments.instrumentID'))
+
+    #! Added outside of flask security.
+    request_emails = Column(Boolean(),nullable=False,default=True)
+    account_created = Column(DateTime())
     
 
-class Instruments(Base):
-    __tablename__= 'instruments'
-    instrumentID = Column(Integer, primary_key=True,autoincrement=True)
-    instrumentName = Column(String(255),nullable=False)
+#* These tables represent the instruments, and which musicians have them.
+class MusicianInstrumentLink(Base):
+    __tablename__ = 'player_instrument_link'
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    playerID = Column('playerID',Integer(),ForeignKey('user.id'))
+    instrumentID = Column('instrumentID',Integer(),ForeignKey('instrument.instrument_id'))
+    
+class Instrument(Base):
+    __tablename__= 'instrument'
+    instrument_id = Column(Integer, primary_key=True,autoincrement=True)
+    name = Column(String(255),nullable=False)
     sectionPosition = Column(Integer, nullable=False)
     takesSolos = Column(Boolean())
     highRange = Column(Boolean())
 
 
-# Define the models for Audition and Signup
+#* Define the models for Audition and Signup
 class Audition(Base):
     __tablename__ = 'audition'
     id = Column(Integer, primary_key=True,autoincrement=True)
     name = Column(String(100), nullable=False)
-    # Add other audition details as needed
+    datetime = Column(DateTime())
+    location = Column(String(100))
 
-class Signup(Base):
-    __tablename__ = 'signups'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+class AuditionUserLink(Base):
+    __tablename__ = 'audition_signup_link'
+    signup_link_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, nullable=False)  # The ID of the user who signed up
     audition_id = Column(Integer, ForeignKey('audition.id'), nullable=False)
 
 
-class Gigs(Base):
-    __tablename__ = 'gigs'
-    id = Column(Integer,primary_key=True, autoincrement=True)
+#* A table for all the events.
+class Event(Base):
+    __tablename__ = 'event'
+    event_id = Column(Integer,primary_key=True, autoincrement=True)
     name = Column(String(200))
     description = Column(String(100))
-    date = Column(DateTime())
+    datetime = Column(DateTime())
     location = Column(String(100))
+
+#* The different types of users (following the ERD).
+class Musician(Base):
+    __tablename__ = 'musician'
+    id = Column('id',Integer(),ForeignKey('user.id'),primary_key=True)
+    soloing_ability = Column(String(100),nullable=True)
+
+class Singer(Base):
+    __tablename__ = 'singer'
+    id = Column('id',Integer(),ForeignKey('user.id'),primary_key=True)
+    range = Column(String(100),nullable=True)
+    audition_video_url = Column(String(200),nullable=True)
+
+class Arranger(Base):
+    __tablename__ = 'arranger'
+    id = Column('id',Integer(),ForeignKey('user.id'),primary_key=True)
+    range = Column(String(100),nullable=True)
+    audition_video_url = Column(String(200),nullable=True)

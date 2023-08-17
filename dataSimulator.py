@@ -1,4 +1,4 @@
-from models import Audition, Signup, Gigs ,Instruments
+from models import Audition, AuditionUserLink, Event, Instrument
 from flask_security import hash_password
 import datetime
 
@@ -9,12 +9,12 @@ def commitData(session,className,data):
 
 def add_simulated_data(app,db_session):
     def insert_instruments_data(data):
-        mapped_data = [{ "instrumentName": instrument,
+        mapped_data = [{ "name": instrument,
                         "sectionPosition": position,
                         "takesSolos": solos,
                         "highRange": high_range } 
                         for instrument, position, solos, high_range in data]
-        commitData(db_session,Instruments,mapped_data)
+        commitData(db_session,Instrument,mapped_data)
 
     def insert_audition_data(data):
         mapped_data = [{"name": name} for name in data]
@@ -29,7 +29,7 @@ def add_simulated_data(app,db_session):
              "location": location
             } for name, description, date, location in data]
 
-        commitData(db_session,Gigs,mapped_data)
+        commitData(db_session,Event,mapped_data)
 
 
     # Create users and roles to test with
@@ -39,11 +39,14 @@ def add_simulated_data(app,db_session):
     app.security.datastore.find_or_create_role(
         name="auditioned", permissions={"user-read", "user-write"}
     )
+    app.security.datastore.find_or_create_role(
+        name="admin", permissions={"user-read", "user-write"}
+    )
     db_session.commit()
 
     if not app.security.datastore.find_user(email="test@me.com"):
         app.security.datastore.create_user(email="test@me.com",
-        password=hash_password("password"), roles=["user"])
+        password=hash_password("password"), roles=["user","admin"])
 
     if not app.security.datastore.find_user(email="2@me.com"):
         app.security.datastore.create_user(email="2@me.com",
@@ -78,7 +81,7 @@ def add_simulated_data(app,db_session):
 
     insert_audition_data(["Drums","Trumpet","Saxophone"])
 
-    signup = Signup(user_id = 1, audition_id = 1)
+    signup = AuditionUserLink(user_id = 1, audition_id = 1)
     db_session.add(signup)
     db_session.commit()
 

@@ -54,6 +54,11 @@
                 <a class="nav-link" href='{{ url_for("upcoming") }}'>Upcoming</a>
               </li>
             {% endif %}
+            {% if current_user.has_role("admin") %}
+              <li class="nav-item active">
+                <a class="nav-link" href='{{ url_for("adminInterface") }}'>Admin</a>
+              </li>
+            {% endif %}
           </ul>
         {% endif %}
         <ul class="navbar-nav ml-auto">
