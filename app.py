@@ -3,7 +3,7 @@ from passlib import totp
 from flask import Flask, flash, url_for, redirect,render_template, Request, request
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
-from database import db_session, init_db
+from database import db_session
 from models import User, Role, Audition, AuditionUserLink, Event
 from secret import generate_secret_key_and_salt
 
@@ -113,10 +113,6 @@ def update_signup():
 def adminInterface():
     return render_template('adminInterface.html')
 
-
-# one time setup
-with app.app_context():
-    init_db(app)
 
 if __name__ == '__main__':
     # run application (can also use flask run)
