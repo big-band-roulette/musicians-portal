@@ -118,7 +118,7 @@ def adminInterface():
 # one time setup
 with app.app_context():
     init_db()
-    add_simulated_data(app,db_session)
+    #add_simulated_data(app,db_session)
 
 if __name__ == '__main__':
     # run application (can also use flask run)
