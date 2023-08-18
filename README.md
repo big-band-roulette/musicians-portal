@@ -9,6 +9,8 @@ To build this repository, create a new python env and run:
 
 `python -m pip install pandas`
 
+`python -m pip install mysql-connector-python`
+
 This should install all of the necessary modules. You can then run the `app.py` python file, which should create the app at port 5001.
 
 There are two users pre-enabled on the system (all simulation data can be found in data simulator.py) These are:
