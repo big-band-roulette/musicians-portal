@@ -1,9 +1,11 @@
-from database import Base
 from flask_security import UserMixin, RoleMixin, AsaList
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy import Boolean, DateTime, Column, Integer, \
                     String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 # TODO: Check that each event doesn't need it's own table with all the people playing in it
 

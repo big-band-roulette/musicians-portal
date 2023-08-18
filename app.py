@@ -5,7 +5,6 @@ from flask_security import Security, roles_required,current_user, auth_required,
      SQLAlchemySessionUserDatastore
 from database import db_session, init_db
 from models import User, Role, Audition, AuditionUserLink, Event
-from dataSimulator import add_simulated_data
 from secret import generate_secret_key_and_salt
 
 generate_secret_key_and_salt()
@@ -15,7 +14,7 @@ app = Flask(__name__)
 
 class R(Request):
     # Whitelist SRCF and/or custom domains to access the site via proxy.
-    trusted_hosts = {"bbr.soc.srcf.net"}
+    trusted_hosts = {"bbr.soc.srcf.net","dev.bigbandroulette.com"}
 app.request_class = R
 
 # Generate a nice key using secrets.token_urlsafe()
@@ -69,7 +68,7 @@ def auditions():
     return render_template('auditions.html',
                            auditions=labelled_auditions)
 
-@app.route('/')
+@app.route('/index.html')
 def index():
     return redirect('/login')
 
@@ -79,7 +78,7 @@ def profile():
     return render_template('profile.html')
 
 @app.route('/upcoming')
-@roles_required('auditioned')
+#@roles_required('auditioned')
 def upcoming():
     gigs = Event.query.all()
     return render_template('upcoming.html',gigs=gigs)
@@ -117,8 +116,7 @@ def adminInterface():
 
 # one time setup
 with app.app_context():
-    init_db()
-    #add_simulated_data(app,db_session)
+    init_db(app)
 
 if __name__ == '__main__':
     # run application (can also use flask run)
