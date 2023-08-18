@@ -29,4 +29,10 @@ These are in place to explain obvious parts for improvement and to warn against 
 ## Please feel free to add comments wherever!
 Follow the `better comments` extension if working in vscode (or just copy pre-existing formatting) so that they can be seen clearly.
 
+# TO RUN
+
+- first set the environment variables. In powershell, run `. .\set_env_vars.ps1`.
+
+- Then run `python init_db.py`. This will seed the database.
+- Then start all the usual running of `run.sh` or `systemct1` (or if testing locally just run `app.py`)
 

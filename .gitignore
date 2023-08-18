@@ -163,4 +163,4 @@ cython_debug/
 .vscode/
 database.db
 run.sh
-database_credentials.sh
+set_env_vars.ps1

@@ -1,50 +1,19 @@
 import os
-from passlib import totp
 from flask import Flask, flash, url_for, redirect,render_template, Request, request
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session
 from models import User, Role, Audition, AuditionUserLink, Event
-from secret import generate_secret_key_and_salt
-
-generate_secret_key_and_salt()
+from config import Config
+from dataSimulator import add_simulated_data
 
 # Create app
 app = Flask(__name__)
-
-class R(Request):
-    # Whitelist SRCF and/or custom domains to access the site via proxy.
-    trusted_hosts = {"bbr.soc.srcf.net","dev.bigbandroulette.com"}
-app.request_class = R
-
-# Generate a nice key using secrets.token_urlsafe()
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-# Bcrypt is set as default SECURITY_PASSWORD_HASH, which requires a salt
-# Generate a good salt using: secrets.SystemRandom().getrandbits(128)
-app.config['SECURITY_PASSWORD_SALT'] = os.environ.get("SECURITY_PASSWORD_SALT")
-# Don't worry if email has findable domain
-app.config["SECURITY_EMAIL_VALIDATOR_ARGS"] = {"check_deliverability": False}
-
-#allow user registration
-app.config['SECURITY_REGISTERABLE'] = True 
-app.config['SECURITY_PASSWORD_CHECK_BREACHED'] = 'strict'
-app.config['SECURITY_PASSWORD_COMPLEXITY_CHECKER'] = 'zxcvbn'
-app.config['SECURITY_ZXCBN_MINIMUM'] = 3
-
-#force email confirmation on login
-app.config["SECURITY_CONFIRMABLE"] = False
-
-#force register email
-app.config["SECURITY_SEND_REGISTER_EMAIL"] = False
-
-# Adding two factor authentication
-app.config["SECURITY_TWO_FACTOR"] = True
-app.config['SECURITY_TWO_FACTOR_REQUIRED'] = False
-app.config["SECURITY_TOTP_SECRETS"] = {1: totp.generate_secret()}
-app.config["SECURITY_TOTP_ISSUER"] = "Big Band Roulette"
-
-# change the post login page to auditions
-app.config['SECURITY_POST_LOGIN_VIEW'] = '/auditions'
+app.config.from_object(Config)
+# class R(Request):
+#     # Whitelist SRCF and/or custom domains to access the site via proxy.
+#     trusted_hosts = {"bbr.soc.srcf.net","dev.bigbandroulette.com"}
+# app.request_class = R
 
 # Setup Flask-Security
 user_datastore = SQLAlchemySessionUserDatastore(db_session, User, Role)
@@ -69,6 +38,7 @@ def auditions():
                            auditions=labelled_auditions)
 
 @app.route('/index.html')
+@app.route('/')
 def index():
     return redirect('/login')
 
@@ -117,5 +87,5 @@ def adminInterface():
 if __name__ == '__main__':
     # run application (can also use flask run)
     # Toggle for debug config
-    #app.config['DEBUG'] = True
+    app.config['DEBUG'] = True
     app.run(port=5001)
