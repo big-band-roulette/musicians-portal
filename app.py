@@ -1,28 +1,22 @@
 import os
 from passlib import totp
-from flask import Flask, flash, url_for, redirect,render_template, request
+from flask import Flask, flash, url_for, redirect,render_template, Request, request
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session, init_db
 from models import User, Role, Audition, AuditionUserLink, Event
 from dataSimulator import add_simulated_data
-import secrets
-# Create app
-
-def generate_secret_key_and_salt():
-    # Generate a secure random secret key
-    secret_key = secrets.token_hex(32)
-
-    # Generate a secure random salt
-    salt = secrets.token_hex(16)
-
-    # Set the secret key and salt as environment variables
-    os.environ['SECRET_KEY'] = secret_key
-    os.environ['SECURITY_PASSWORD_SALT'] = salt
+from secret import generate_secret_key_and_salt
 
 generate_secret_key_and_salt()
+
+# Create app
 app = Flask(__name__)
-app.config['DEBUG'] = True
+
+class R(Request):
+    # Whitelist SRCF and/or custom domains to access the site via proxy.
+    trusted_hosts = {"bbr.soc.srcf.net"}
+app.request_class = R
 
 # Generate a nice key using secrets.token_urlsafe()
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -128,4 +122,6 @@ with app.app_context():
 
 if __name__ == '__main__':
     # run application (can also use flask run)
+    # Toggle for debug config
+    #app.config['DEBUG'] = True
     app.run(port=5001)
