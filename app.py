@@ -5,7 +5,6 @@ from flask_security import Security, roles_required,current_user, auth_required,
 from database import db_session
 from models import User, Role, Audition, AuditionUserLink, Event
 from config import Config
-from dataSimulator import add_simulated_data
 
 # Create app
 app = Flask(__name__)
@@ -54,6 +53,10 @@ def upcoming():
     return render_template('upcoming.html',gigs=gigs)
 
 
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+
 @app.route('/update_signup', methods=['POST'])
 @auth_required()
 def update_signup():
@@ -69,12 +72,12 @@ def update_signup():
     if not signup:
         signup = AuditionUserLink(user_id=user_id, audition_id=audition_id)
         db_session.add(signup)
+        db_session.commit()
     else:
         #remove the signup
         db_session.delete(signup)
+        db_session.commit()
 
-    db_session.commit()
-    flash('Signup status updated successfully')
     return redirect(url_for('auditions'))
 
 

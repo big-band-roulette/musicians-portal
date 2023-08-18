@@ -6,17 +6,17 @@ import os
 
 # Database configuration
 db_user = os.environ.get('DB_USER')
-db_password = os.environ.get('DB_PASSWORD') 
+db_password = '' if os.environ.get('DB_HOST') == 'localhost' else os.environ.get('DB_PASSWORD') 
 db_name = os.environ.get('DB_NAME')
 db_host = os.environ.get('DB_HOST')  # Usually 'localhost' or an IP address
 
 # Create the engine
-engine = create_engine(f"mysql+mysqlconnector://{db_user}:{db_password}@{db_host}/{db_name}")
+engine = create_engine(f"mysql+mysqlconnector://{db_user}:{db_password}@{db_host}/{db_name}",echo=False)
 
 #engine = create_engine('sqlite:///database.db')
 db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
+                                        autoflush=True,
+                                        bind=engine))
 
 Base.query = db_session.query_property()
 
