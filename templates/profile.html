@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>Profile Page</h1>
+    {% if current_user.is_authenticated %}
   <ul>
     <li>
       <strong>Username</strong>
@@ -18,5 +19,8 @@
     </li>
     <!-- Add more list items as needed -->
   </ul>
+  {% else %}
+    Login
+  {% endif %}
   <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
 {% endblock content %}
