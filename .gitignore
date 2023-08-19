@@ -164,3 +164,4 @@ cython_debug/
 database.db
 run.sh
 set_env_vars.ps1
+test_init.ps1

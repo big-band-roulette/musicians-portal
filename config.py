@@ -31,3 +31,22 @@ class Config:
 
   # change the post login page to auditions
   SECURITY_POST_LOGIN_VIEW = '/auditions'
+
+  # Tracking login statistics 
+  SECURITY_TRACKABLE = True
+
+  # Recovering Passwords
+  SECURITY_CHANGEABLE = True
+  SECURITY_RECOVERABLE = True # TODO This should be changed to true, when we have an email extension configured
+  SECURITY_EMAIL_SENDER = "no-reply@bigbandroulette.com" # TODO this might not be the right setting...
+
+
+  # mail setup
+
+  # Select the appropriate configuration based on environment
+  MAIL_SERVER = os.environ.get('MAIL_SERVER')  # Use a test SMTP server for local testing
+  MAIL_PORT = os.environ.get('MAIL_PORT')
+  MAIL_USE_TLS = True if os.environ.get('MAIL_USE_TLS') == 'True' else False
+  MAIL_USE_SSL = True if os.environ.get('MAIL_USE_SSL') == 'True' else False
+  MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+  MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')

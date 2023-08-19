@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-  This page is for your profile
-  {% if current_user.is_authenticated %}
-    {{ current_user.email }}
-    {{ current_user.username }}
-  {% else %}
-    Login
-  {% endif %}
+  <h1>Profile Page</h1>
+  <ul>
+    <li>
+      <strong>Username</strong>
+      {{ current_user.username }}
+    </li>
+    <hr>
+    <li>
+      <strong>Change Password</strong>
+      <a href='{{ url_for("security.change_password") }}'>Link 2</a>
+    </li>
+    <hr>
+    <li>
+      <strong>Email</strong>
+      {{ current_user.email }}
+    </li>
+    <!-- Add more list items as needed -->
+  </ul>
   <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
 {% endblock content %}

@@ -5,6 +5,7 @@ from flask_security import Security, roles_required,current_user, auth_required,
 from database import db_session
 from models import User, Role, Audition, AuditionUserLink, Event
 from config import Config
+from flask_mailman import Mail
 
 # Create app
 app = Flask(__name__)
@@ -17,6 +18,9 @@ app.config.from_object(Config)
 # Setup Flask-Security
 user_datastore = SQLAlchemySessionUserDatastore(db_session, User, Role)
 app.security = Security(app, user_datastore)
+
+# mail setup
+mail = Mail(app)
 
 # Views
 
