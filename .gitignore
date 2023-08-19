@@ -165,3 +165,4 @@ database.db
 run.sh
 set_env_vars.ps1
 test_init.ps1
+set_env_vars.sh
