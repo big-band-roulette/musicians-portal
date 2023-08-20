@@ -6,6 +6,10 @@ from database import db_session
 from models import User, Role, Audition, AuditionUserLink, Event
 from config import Config
 from flask_mailman import Mail
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Create app
 app = Flask(__name__)
