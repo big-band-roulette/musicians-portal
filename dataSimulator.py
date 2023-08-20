@@ -1,4 +1,4 @@
-from models import Audition, AuditionUserLink, Event, Instrument
+from models import Audition, AuditionUserLink, Event, Instrument,Musician,Singer,Arranger
 from flask_security import hash_password
 import datetime
 
@@ -100,14 +100,17 @@ def add_simulated_data(app,db_session):
     )
     db_session.commit()
 
+    musician = Musician()
+    singer = Singer(vocal_range='Alto', singer_audition_video_url='...')
+    arranger = Arranger(arranger_audition_video_url='...')
     if not app.security.datastore.find_user(email="test@me.com"):
         app.security.datastore.create_user(email="test@me.com",
-        password=hash_password("password"), roles=["user","admin"])
+        password=hash_password("password"), roles=["user","admin"],band_roles=[arranger])
     db_session.commit()
 
     if not app.security.datastore.find_user(email="2@me.com"):
         app.security.datastore.create_user(email="2@me.com",
-        password=hash_password("2"), roles=["user","auditioned"])
+        password=hash_password("2"), roles=["user","auditioned"],band_roles=[musician,singer])
     db_session.commit()
 
 

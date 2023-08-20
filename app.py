@@ -89,10 +89,3 @@ def update_signup():
 @roles_required('admin')
 def adminInterface():
     return render_template('adminInterface.html')
-
-
-if __name__ == '__main__':
-    # run application (can also use flask run)
-    # Toggle for debug config
-    app.config['DEBUG'] = True
-    app.run(port=5001)

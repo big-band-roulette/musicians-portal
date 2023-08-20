@@ -1,24 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>Profile Page</h1>
-    {% if current_user.is_authenticated %}
-  <ul>
-    <li>
-      <strong>Username</strong>
-      {{ current_user.username }}
-    </li>
+  {% if current_user.is_authenticated %}
+    <ul>
+      <li>
+        <strong>Username:</strong>
+        {{ current_user.username }}
+      </li>
+      <hr>
+      <li>
+        <strong>Password:</strong>
+        <a href='{{ url_for("security.change_password") }}'>click here to change password</a>
+      </li>
+      <hr>
+      <li>
+        <strong>Email:</strong>
+        {{ current_user.email }}
+      </li>
+      <!-- Add more list items as needed -->
+    </ul>
     <hr>
-    <li>
-      <strong>Change Password</strong>
-      <a href='{{ url_for("security.change_password") }}'>Link 2</a>
-    </li>
-    <hr>
-    <li>
-      <strong>Email</strong>
-      {{ current_user.email }}
-    </li>
-    <!-- Add more list items as needed -->
-  </ul>
+    <strong>Your Roles:</strong>
+    <ul>
+      {% for role in current_user.band_roles %}<li>{{ role.role_type }}</li>{% endfor %}
+    </ul>
   {% else %}
     Login
   {% endif %}

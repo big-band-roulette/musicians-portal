@@ -40,3 +40,11 @@ li {
   align-items: center;
   padding: 10px;
 }
+
+i {
+  color: var(--white);
+}
+
+strong {
+  color: var(--dark-green);
+}

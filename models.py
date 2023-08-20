@@ -46,7 +46,9 @@ class User(Base, UserMixin):
     #! Added outside of flask security.
     request_emails = Column(Boolean(),nullable=False,default=True)
     account_created = Column(DateTime())
-    
+
+    #instruments = relationship('Instrument',secondary='MusicianInstrumentLink',back_populates='users')
+    band_roles = relationship('BandRole',back_populates='user')
 
 #* These tables represent the instruments, and which musicians have them.
 class MusicianInstrumentLink(Base):
@@ -89,19 +91,27 @@ class Event(Base):
     location = Column(String(100))
 
 #* The different types of users (following the ERD).
-class Musician(Base):
-    __tablename__ = 'musician'
-    id = Column('id',Integer(),ForeignKey('user.id'),primary_key=True)
-    soloing_ability = Column(String(100),nullable=True)
+class BandRole(Base):
+    __tablename__ = 'band_role'
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    user_id = Column(Integer(),ForeignKey('user.id'))
+    role_type = Column(String(20))
 
-class Singer(Base):
-    __tablename__ = 'singer'
-    id = Column('id',Integer(),ForeignKey('user.id'),primary_key=True)
-    range = Column(String(100),nullable=True)
-    audition_video_url = Column(String(200),nullable=True)
+    user = relationship('User',back_populates='band_roles')
 
-class Arranger(Base):
-    __tablename__ = 'arranger'
-    id = Column('id',Integer(),ForeignKey('user.id'),primary_key=True)
-    range = Column(String(100),nullable=True)
-    audition_video_url = Column(String(200),nullable=True)
+    __mapper_args__ = {
+        'polymorphic_identity': 'role',
+        'polymorphic_on': role_type
+    }
+
+class Musician(BandRole):
+    __mapper_args__ = {'polymorphic_identity': 'musician'}
+
+class Singer(BandRole):
+    __mapper_args__ = {'polymorphic_identity': 'singer'}
+    vocal_range = Column(String(100),nullable=True)
+    singer_audition_video_url = Column(String(200),nullable=True)
+
+class Arranger(BandRole):
+    __mapper_args__ = {'polymorphic_identity': 'arranger'}
+    arranger_audition_video_url = Column(String(200),nullable=True)
