@@ -1,5 +1,4 @@
-import os
-from flask import Flask, flash, url_for, redirect,render_template, Request, request
+from flask import Flask, url_for, redirect,render_template, request
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session
@@ -7,13 +6,16 @@ from models import User, Role, Audition, AuditionUserLink, Event
 from config import Config
 from flask_mailman import Mail
 from dotenv import load_dotenv
-
+from flask_wtf import FlaskForm
+from wtforms import SubmitField,StringField
+from flask_wtf.csrf import CSRFProtect
 # Load environment variables from .env file
 load_dotenv()
 
 # Create app
 app = Flask(__name__)
 app.config.from_object(Config)
+crsf = CSRFProtect(app)
 # class R(Request):
 #     # Whitelist SRCF and/or custom domains to access the site via proxy.
 #     trusted_hosts = {"bbr.soc.srcf.net","dev.bigbandroulette.com"}
@@ -25,6 +27,11 @@ app.security = Security(app, user_datastore)
 
 # mail setup
 mail = Mail(app)
+
+# confirmation form for the register interest
+class ConfirmationForm(FlaskForm):
+    event_id = StringField('Event ID')
+    submit = SubmitField('Submit')
 
 # Views
 
@@ -54,12 +61,33 @@ def index():
 def profile():
     return render_template('profile.html')
 
-@app.route('/upcoming')
-#@roles_required('auditioned')
+@app.route('/upcoming', methods=['GET','POST'])
+@auth_required()
 def upcoming():
-    gigs = Event.query.all()
-    return render_template('upcoming.html',gigs=gigs)
+    confirmationForm = ConfirmationForm()
+    if confirmationForm.validate_on_submit():
+        event_id = confirmationForm.event_id.data
+        event = Event.query.filter_by(event_id=event_id).first()
+        current_user.events.append(event)
+        db_session.commit()
 
+    events = Event.query.all()
+
+    return render_template('upcoming.html',events=events,form = confirmationForm)
+
+@app.route('/unregister/<int:event_id>',methods=['POST'])
+@auth_required()
+def unregister(event_id):
+    event = Event.query.get(event_id)
+    current_user.events.remove(event)
+    db_session.commit()
+    return redirect(url_for('upcoming'))
+
+@app.route('/eventDetails')
+@auth_required()
+def eventDetails():
+    event = Event.query.get(request.args['event_id'])
+    return render_template('eventDetails.html',event=event)
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ event.name }}</h1>
+  <!-- Add actual logic to check user's audition status -->
+  <p>{{ event.description }}</p>
+  <p>{{ event.event_id }}</p>
+  <p>Date: {{ event.datetime }}</p>
+  <p>In Pool: {{ event.is_auditioned_by_user }}</p>
+  <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
+{% endblock content %}

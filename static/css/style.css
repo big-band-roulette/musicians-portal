@@ -48,3 +48,15 @@ i {
 strong {
   color: var(--dark-green);
 }
+
+.registerButtonPlacer button {
+  float: none;
+}
+
+.registerButtonPlacer  {
+  text-align: right;
+}
+
+p {
+  margin: 0;
+}

@@ -1,4 +1,5 @@
-from models import Audition, AuditionUserLink, Event, Instrument,Musician,Singer,Arranger
+from models import Audition, AuditionUserLink, Event, \
+    Instrument,Musician,Singer,Arranger
 from flask_security import hash_password
 import datetime
 
@@ -44,40 +45,46 @@ def insert_audition(db_session):
 
 
 def insert_gig(db_session):
-    data = [("Night at the Movies",
+    data = [("West Road Concert Hall",
+    "This one was a concert so memorable I have no more details about itup wi\
+    th on the spot and so there's probably a bug in it somewhere",
+    datetime.datetime(2022,10,1,19,45,0),
+    "Cambridge!" 
+    ),
+    ("Night at the Movies",
     "Honestly I have no clue, but I came up wi\
     th on the spot and so there's probably a bug in it somewhere",
-    datetime.datetime(2001,10,1),
+    datetime.datetime(2023,9,1,19,45,0),
     "Cambridge!" 
     ),
     ("John's May Ball",
     "Here's another description I came up wi\
     th on the spot and so there's probably a bug in it somewhere",
-    datetime.datetime(2001,10,1),
+    datetime.datetime(2023,10,1,19,45,0),
     "Cambridge!" 
     ),
     ("Robinson May Ball",
     "Honestly I have no clue, but I came up wi\
     th on the spot and so there's probably a bug in it somewhere",
-    datetime.datetime(2001,10,1),
+    datetime.datetime(2023,11,1,19,45,0),
     "Cambridge!" 
     ),
     ("RoadTrippin!",
     "Honestly I have no clue, but I came up wi\
     th on the spot and so there's probably a bug in it somewhere",
-    datetime.datetime(2023,2,1),
+    datetime.datetime(2023,12,1,19,45,0),
     "Cambridge!" 
     ),
     ("Swinging 60's",
     "Honestly I have no clue, but I came up wi\
     th on the spot and so there's probably a bug in it somewhere",
-    datetime.datetime(2000,5,1),
+    datetime.datetime(2024,1,1,19,45,0),
     "Cambridge!" 
     )]
     mapped_data = [
         {"name": name,
          "description": description,
-         "date": date,
+         "datetime": date,
          "location": location
         } for name, description, date, location in data]
 
@@ -103,6 +110,7 @@ def add_simulated_data(app,db_session):
     musician = Musician()
     singer = Singer(vocal_range='Alto', singer_audition_video_url='...')
     arranger = Arranger(arranger_audition_video_url='...')
+
     if not app.security.datastore.find_user(email="test@me.com"):
         app.security.datastore.create_user(email="test@me.com",
         password=hash_password("password"), roles=["user","admin"],band_roles=[arranger])

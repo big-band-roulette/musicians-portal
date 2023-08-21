@@ -1,11 +1,110 @@
 {% extends "base.html" %}
 {% block content %}
-  {# TODO: Create a better gigs class, and display them better here - sorry about the awful styling! #}
-  {% for gig in gigs %}
-    <h1>{{ gig['name'] }}</h1>
-    <span class="badge badge-primary">{{ gig['name'] }}</span>
-    <span class="badge badge-primary">{{ gig['date'] }}</span>
-    <span class="badge badge-secondary">{{ gig['location'] }}</span>
-    <hr>
-  {% endfor %}
+  {# TODO: Create a better gigs class, and display them better here - sorry about the awful styling!#}
+  <h1>Events</h1>
+  <select id="filter">
+    <option value="upcoming">Upcoming</option>
+    <option value="all">All</option>
+    <option value="past">Past</option>
+    <option value="my">My</option>
+  </select>
+  <ul id="event-list">
+    {% for event in events %}
+      <div class="eventBox" data-datetime={{ event.datetime }} data-event_id ={{ event.event_id }} data-signed_up = {% if event in current_user.events %} True {% else %} False {% endif %}>
+        <a class="eventTitle"
+           href='{{ url_for("eventDetails", event_id=event.event_id) }}'>
+          <h3>{{ event.name }}</h3>
+        </a>
+        <p>Date: {{ event.datetime }}</p>
+        <p>{{ event.description }}</p>
+        <div class="registerButtonPlacer">
+          {% if event not in current_user.events %}
+            <button type="button"
+                    class="btn btn-primary"
+                    data-toggle="modal"
+                    data-target="#confirmationModal{{ event.event_id }}">Join Pool</button>
+          {% else %}
+            <form method='post'
+                  action="{{ url_for('unregister', event_id=event.event_id) }}">
+              {{ form.csrf_token }}
+              <button type="submit" class="btn btn-primary">Unregister</button>
+            </form>
+          {% endif %}
+        </div>
+        <!-- Modal -->
+        <div class="modal fade"
+             id="confirmationModal{{ event.event_id }}"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="confirmationModalLabel"
+             aria-hidden="true">
+          <!-- Modal content and form -->
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Confirm Registration</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">{{ '×' }}</span>
+                </button>
+              </div>
+              <div class="modal-body">Are you sure you are free at this time?</div>
+              <div class="modal-footer">
+                <form method="post" action='{{ url_for("upcoming") }}'>
+                  {{ form.hidden_tag() }}
+                  <input type="hidden" name="event_id" value='{{ event.event_id }}'>
+                  <button type="button"
+                          class="btn btn-secondary"
+                          data-dismiss="modal"
+                          aria-label="Close">
+                    <span aria-hidden="true">Cancel Registration</span>
+                  </button>
+                  {{ form.submit(id="submitButton", class='btn btn-primary') }}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+      </div>
+    {% endfor %}
+  </ul>
 {% endblock content %}
+{% block scripts %}
+  {# * This operates the toggle switch in-browser, thus saving on database queries.
+ * It works by filtering based on html data tags. #}
+  <script>
+  $(document).ready(function() {
+    function updateEvents(filter) {
+      const now = new Date();
+
+      $('#event-list div[data-datetime]').each(function() {
+        const eventDatetime = new Date($(this).data('datetime'));
+        let shouldShow = false;
+
+        if (filter === 'all') {
+          shouldShow = true;
+        } else if (filter === 'upcoming') {
+          shouldShow = eventDatetime >= now;
+        } else if (filter === 'past') {
+          shouldShow = eventDatetime < now;
+        }
+
+        if (filter === 'my') {
+          const signed_up = $(this).data('signed_up');
+          shouldShow = signed_up === 'True';
+        }
+
+        $(this).toggle(shouldShow);
+      });
+    }
+
+    updateEvents('upcoming');
+
+    $('#filter').change(function() {
+      const selectedFilter = $(this).val();
+      updateEvents(selectedFilter);
+    });
+  });
+
+  </script>
+{% endblock scripts %}

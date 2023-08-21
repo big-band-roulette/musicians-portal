@@ -49,6 +49,8 @@ class User(Base, UserMixin):
 
     #instruments = relationship('Instrument',secondary='MusicianInstrumentLink',back_populates='users')
     band_roles = relationship('BandRole',back_populates='user')
+    events = relationship('Event',secondary='event_user_link',back_populates='users')
+    picked_events = relationship('Event',secondary='event_user_picked_link',back_populates='picked_users')
 
 #* These tables represent the instruments, and which musicians have them.
 class MusicianInstrumentLink(Base):
@@ -77,7 +79,7 @@ class Audition(Base):
 class AuditionUserLink(Base):
     __tablename__ = 'audition_signup_link'
     signup_link_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, nullable=False)  # The ID of the user who signed up
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
     audition_id = Column(Integer, ForeignKey('audition.id'), nullable=False)
 
 
@@ -89,6 +91,23 @@ class Event(Base):
     description = Column(String(100))
     datetime = Column(DateTime())
     location = Column(String(100))
+
+    users = relationship('User',secondary = 'event_user_link',back_populates='events')
+
+    # This is for the users who have been sampled to an event
+    picked_users = relationship('User',secondary='event_user_picked_link',back_populates='picked_events')
+
+class EventUserLink(Base):
+    __tablename__ = 'event_user_link'
+    event_user_link_id =  Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
+    event_id = Column(Integer,ForeignKey('event.event_id'),nullable=False)
+
+class EventUserPickedLink(Base):
+    __tablename__ = 'event_user_picked_link'
+    event_user_link_id =  Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
+    event_id = Column(Integer,ForeignKey('event.event_id'),nullable=False)
 
 #* The different types of users (following the ERD).
 class BandRole(Base):
