@@ -43,11 +43,15 @@ class User(Base, UserMixin):
     tf_primary_method = Column(String(64), nullable=True)
     tf_totp_secret = Column(String(255), nullable=True)
 
-    #! Added outside of flask security.
+    #! All below here added outside of flask security.
     request_emails = Column(Boolean(),nullable=False,default=True)
     account_created = Column(DateTime())
 
+    # Notifications 
     notify_about_auditions = Column(Boolean(),nullable=False,default=True)
+    notify_about_new_gigs = Column(Boolean(),nullable=False,default=True)
+    notify_about_drop_outs = Column(Boolean(),nullable=False,default=True)
+
     instruments = relationship('Instrument',secondary='player_instrument_link',back_populates='players')
     band_roles = relationship('BandRole',back_populates='user')
     events = relationship('Event',secondary='event_user_link',back_populates='users')
@@ -58,8 +62,8 @@ class User(Base, UserMixin):
 class MusicianInstrumentLink(Base):
     __tablename__ = 'player_instrument_link'
     id = Column(Integer, primary_key=True,autoincrement=True)
-    playerID = Column('playerID',Integer(),ForeignKey('user.id'))
-    instrumentID = Column('instrumentID',Integer(),ForeignKey('instrument.instrument_id'))
+    user_id = Column('playerID',Integer(),ForeignKey('user.id'))
+    instrument_id = Column('instrumentID',Integer(),ForeignKey('instrument.instrument_id'))
     
 class Instrument(Base):
     __tablename__= 'instrument'

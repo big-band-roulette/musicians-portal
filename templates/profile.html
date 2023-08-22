@@ -2,6 +2,22 @@
 {% block content %}
   <h1>Profile Page</h1>
   {% if current_user.is_authenticated %}
+    <form method="post" action='{{ url_for("toggle_notifications") }}'>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_type" value="notify_about_new_gigs">
+      <p>
+        <label for="notify_about_new_gigs">Notify me about new gigs:</label>
+        <input type="checkbox" name="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
+      </p>
+    </form>
+    <form method="post" action='{{ url_for("toggle_notifications") }}'>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_type" value="notify_about_drop_outs">
+      <p>
+        <label for="notify_about_drop_outs">Notify me about drop-outs:</label>
+        <input type="checkbox" name="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
+      </p>
+    </form>
     <ul>
       <li>
         <strong>Username:</strong>
@@ -24,6 +40,13 @@
     <ul>
       {% for role in current_user.band_roles %}<li>{{ role.role_type }}</li>{% endfor %}
     </ul>
+    <hr>
+    <strong>Your Instruments</strong>
+    {% if current_user.instruments != [] %}
+      {% for instrument in current_user.instruments %}<p>{{ instrument.name }}</p>{% endfor %}
+    {% else %}
+      <p>You are not currently in the pool for any instruments, please go to auditions.</p>
+    {% endif %}
   {% else %}
     Login
   {% endif %}

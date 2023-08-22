@@ -5,9 +5,9 @@
   <hr>
   <form method="post" action='{{ url_for("toggle_notifications") }}'>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="form_type" value="notifications">
-    <label for="notifications">Receive Notifications:</label>
-    <input type="checkbox" name="notifications" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
+    <input type="hidden" name="form_type" value="notify_about_auditions">
+    <label for="notify_about_auditions">Receive Notifications:</label>
+    <input type="checkbox" name="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
   </form>
   <div class="booked_auditions">
     <h3>My Booked Auditions</h3>

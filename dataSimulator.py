@@ -1,5 +1,5 @@
 from models import Audition, AuditionUserLink, Event, \
-    Instrument,Musician,Singer,Arranger
+    Instrument,Musician, MusicianInstrumentLink,Singer,Arranger
 from flask_security import hash_password
 import datetime
 
@@ -138,4 +138,10 @@ def add_simulated_data(app,db_session):
 
     signup = AuditionUserLink(user_id = 1, audition_id = 1, instrument_id= 7)
     db_session.add(signup)
+    db_session.commit()
+
+    userInstrument1 = MusicianInstrumentLink(user_id = 1, instrument_id= 1)
+    userInstrument2 = MusicianInstrumentLink(user_id = 1, instrument_id= 5)
+    db_session.add(userInstrument1)
+    db_session.add(userInstrument2)
     db_session.commit()

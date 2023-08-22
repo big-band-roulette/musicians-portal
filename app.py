@@ -65,11 +65,14 @@ def auditions():
 @app.route('/toggle_notifications',methods=['POST'])
 @auth_required()
 def toggle_notifications():
-    if request.form['form_type'] == 'notifications':
-        current_user.notify_about_auditions = not current_user.notify_about_auditions
-        db_session.commit()
-    
-    return redirect(url_for('auditions'))
+    notification_type = request.form['form_type']
+    val = True if notification_type in request.form else False
+    setattr(current_user, notification_type, val)
+    db_session.commit()
+
+    # Redirect the user back to the original URL
+    original_url = request.headers.get('Referer')
+    return redirect(original_url)
 
 @app.route('/index.html')
 @app.route('/')
