@@ -39,8 +39,18 @@ def insert_instruments(db_session):
         commitData(db_session,Instrument,mapped_data)
 
 def insert_audition(db_session):
-    data = ["Drums","Trumpet","Saxophone"]
-    mapped_data = [{"name": name} for name in data]
+    data = [
+         ("Drums",datetime.datetime(2020,10,1,19,45,0),'London'),
+         ("Trumpet",datetime.datetime(2023,8,1,14,45,0),'Dubai'),
+         ("Saxophone",datetime.datetime(2023,10,1,4,45,0),'West Road Concert Hall'),
+         ("Saxophone",datetime.datetime(2023,10,1,10,45,0),'West Road Concert Hall'),
+         ("Saxophone",datetime.datetime(2023,10,1,11,45,0),'West Road Concert Hall'),
+         ("Saxophone",datetime.datetime(2023,10,1,19,55,0),'West Road Concert Hall'),
+         ("Saxophone",datetime.datetime(2023,10,1,18,45,0),'West Road Concert Hall'),
+         ("Saxophone",datetime.datetime(2023,10,1,20,45,0),'West Road Concert Hall'),
+         ("Saxophone",datetime.datetime(2023,10,1,16,45,0),'West Road Concert Hall'),
+         ]
+    mapped_data = [{"name": name, "datetime": date, "location": location} for name, date, location in data]
     commitData(db_session,Audition,mapped_data)
 
 
@@ -126,6 +136,6 @@ def add_simulated_data(app,db_session):
     insert_audition(db_session)
     insert_gig(db_session)
 
-    signup = AuditionUserLink(user_id = 1, audition_id = 1)
+    signup = AuditionUserLink(user_id = 1, audition_id = 1, instrument_id= 7)
     db_session.add(signup)
     db_session.commit()

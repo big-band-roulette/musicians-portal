@@ -2,13 +2,14 @@ from flask import Flask, url_for, redirect,render_template, request
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session
-from models import User, Role, Audition, AuditionUserLink, Event
+from models import Instrument, User, Role, Audition, AuditionUserLink, Event
 from config import Config
 from flask_mailman import Mail
 from dotenv import load_dotenv
 from flask_wtf import FlaskForm
 from wtforms import SubmitField,StringField
 from flask_wtf.csrf import CSRFProtect
+from collections import defaultdict
 # Load environment variables from .env file
 load_dotenv()
 
@@ -28,7 +29,7 @@ app.security = Security(app, user_datastore)
 # mail setup
 mail = Mail(app)
 
-# confirmation form for the register interest
+# confirmation for joining the event pool
 class ConfirmationForm(FlaskForm):
     event_id = StringField('Event ID')
     submit = SubmitField('Submit')
@@ -38,18 +39,37 @@ class ConfirmationForm(FlaskForm):
 @app.route("/auditions")
 @auth_required()
 def auditions():
-    user_id = current_user.id
     auditions = Audition.query.all()
-    signups = AuditionUserLink.query.filter_by(user_id=user_id).all()
-    signed_up_ids = [signup.audition_id for signup in signups]
+    instruments = Instrument.query.all()
+    userAuditionLinks = AuditionUserLink.query.filter_by(user_id=current_user.id).all()
 
-    labelled_auditions = [
-        {'name': audition.name, 'id': audition.id, 'signed_up': audition.id in signed_up_ids} 
-        for audition in auditions
-        ]
+    # Create dictionaries for quick access by ID (aud = audition, in = instrument)
+    aud_dict = {audition.id: audition for audition in auditions}
+    in_dict = {instrument.instrument_id: instrument for instrument in instruments}
 
-    return render_template('auditions.html',
-                           auditions=labelled_auditions)
+    # Use a dictionary comprehension to create a list of tuples with audition dates and instrument names
+    user_audition_info =  [(aud_dict[link.audition_id].datetime, in_dict[link.instrument_id].name)for link in userAuditionLinks]
+
+    # Group auditions by day
+    auditions_by_day = defaultdict(list)
+    for audition in auditions:
+        day = audition.datetime.date()
+        auditions_by_day[day].append(audition)
+
+    return render_template('auditions.html', 
+                           auditions_by_day=auditions_by_day, 
+                           instruments = instruments,
+                           audition_info = user_audition_info
+                           )
+
+@app.route('/toggle_notifications',methods=['POST'])
+@auth_required()
+def toggle_notifications():
+    if request.form['form_type'] == 'notifications':
+        current_user.notify_about_auditions = not current_user.notify_about_auditions
+        db_session.commit()
+    
+    return redirect(url_for('auditions'))
 
 @app.route('/index.html')
 @app.route('/')
@@ -96,17 +116,14 @@ def shutdown_session(exception=None):
 @app.route('/update_signup', methods=['POST'])
 @auth_required()
 def update_signup():
-    signup_update = request.form
-    audition_id = list(signup_update.keys())[0]
-    # Assuming you have a way to identify the current user, retrieve their signups
-    user_id = current_user.id
-
+    audition_id = request.form['audition_id']
     # Retrieve the Signup object for the current user and audition
-    signup = AuditionUserLink.query.filter_by(user_id=user_id, audition_id=audition_id).first()
+    signup = AuditionUserLink.query.filter_by(user_id=current_user.id,audition_id=audition_id).first()
 
     # If the signup doesn't exist, create a new one
     if not signup:
-        signup = AuditionUserLink(user_id=user_id, audition_id=audition_id)
+        instrument_id = request.form['instrument_id']
+        signup = AuditionUserLink(user_id=current_user.id, audition_id=audition_id, instrument_id = instrument_id)
         db_session.add(signup)
         db_session.commit()
     else:

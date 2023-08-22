@@ -3,17 +3,84 @@
   <h1>Auditions</h1>
   This page is for the band auditions. Please click to sign up to an audition. Please remember that you only need to audition once, but if you would like to increase your weighting, you are welcome to audition again! The upcoming auditons are:
   <hr>
-  {# TODO: Add in better details about each audition, add things like only being able to sign up for one audition at once etc #}
-  {% for audition in auditions %}
-    <form method='post' action='{{ url_for("update_signup") }}'>
-      <input type="submit"
-             value='{{ audition["name"] }}'
-             name='{{ audition["id"] }}'>
-    </form>
-    Audition name = <span class="badge badge-primary">{{ audition['name'] }}</span>
-    Audition id = <span class="badge badge-primary">{{ audition['id'] }}</span>
-    Signed Up = <span class="badge badge-secondary">{{ audition['signed_up'] }}</span>
+  <form method="post" action='{{ url_for("toggle_notifications") }}'>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="form_type" value="notifications">
+    <label for="notifications">Receive Notifications:</label>
+    <input type="checkbox" name="notifications" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
+  </form>
+  <div class="booked_auditions">
+    <h3>My Booked Auditions</h3>
+    {% for audition_date, instrument_name in audition_info %}
+      <li>Audition Date: {{ audition_date }} | Instrument: {{ instrument_name }}</li>
+    {% endfor %}
     <hr>
-  {% endfor %}
+  </div>
+  <h3>Upcoming Auditions</h3>
+  <div>
+    {% for day, auditions in auditions_by_day.items() %}
+      <h2>{{ day.strftime("%B %d, %Y") }}</h2>
+      <!-- Display date in a readable format -->
+      <div>
+        <ul>
+          {% for audition in auditions %}
+            <li>
+              {{ audition.datetime.strftime("%I:%M %p") }} - {{ audition.location }}
+              {% if audition not in current_user.auditions %}
+                <button type="button"
+                        class="btn btn-primary"
+                        data-toggle="modal"
+                        data-target="#signUpToggleModal{{ audition.id }}">Signup</button>
+              {% else %}
+                <form action='{{ url_for("update_signup") }}' method="post">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="audition_id" value="{{ audition.id }}">
+                  <button type="submit" class="btn btn-primary">Remove</button>
+                </form>
+              {% endif %}
+              <!-- Modal -->
+              <div class="modal fade"
+                   id="signUpToggleModal{{ audition.id }}"
+                   tabindex="-1"
+                   role="dialog"
+                   aria-labelledby="signUpToggleModalLabel"
+                   aria-hidden="true">
+                <!-- Modal content and form -->
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Choose Instrument</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">{{ '×' }}</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">Which instrument are you auditioning on?</div>
+                    <div class="modal-footer">
+                      <form method='post' action='{{ url_for("update_signup") }}'>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="audition_id" value="{{ audition.id }}">
+                        <select name="instrument_id">
+                          {% for instrument in instruments %}
+                            <option value='{{ instrument.instrument_id }}'>{{ instrument.name }}</option>
+                          {% endfor %}
+                        </select>
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal"
+                                aria-label="Close">
+                          <span aria-hidden="true">Cancel Registration</span>
+                        </button>
+                        <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
   <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
 {% endblock content %}

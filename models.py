@@ -47,10 +47,12 @@ class User(Base, UserMixin):
     request_emails = Column(Boolean(),nullable=False,default=True)
     account_created = Column(DateTime())
 
-    #instruments = relationship('Instrument',secondary='MusicianInstrumentLink',back_populates='users')
+    notify_about_auditions = Column(Boolean(),nullable=False,default=True)
+    instruments = relationship('Instrument',secondary='player_instrument_link',back_populates='players')
     band_roles = relationship('BandRole',back_populates='user')
     events = relationship('Event',secondary='event_user_link',back_populates='users')
     picked_events = relationship('Event',secondary='event_user_picked_link',back_populates='picked_users')
+    auditions = relationship('Audition',secondary ='audition_signup_link', back_populates='signups')
 
 #* These tables represent the instruments, and which musicians have them.
 class MusicianInstrumentLink(Base):
@@ -67,20 +69,23 @@ class Instrument(Base):
     takesSolos = Column(Boolean())
     highRange = Column(Boolean())
 
+    players = relationship('User', secondary='player_instrument_link',back_populates='instruments')
 
 #* Define the models for Audition and Signup
 class Audition(Base):
     __tablename__ = 'audition'
     id = Column(Integer, primary_key=True,autoincrement=True)
-    name = Column(String(100), nullable=False)
+    details = Column(String(100), nullable=False)
     datetime = Column(DateTime())
     location = Column(String(100))
+    signups = relationship('User',secondary='audition_signup_link',back_populates='auditions')
 
 class AuditionUserLink(Base):
     __tablename__ = 'audition_signup_link'
     signup_link_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
     audition_id = Column(Integer, ForeignKey('audition.id'), nullable=False)
+    instrument_id = Column(Integer, ForeignKey('instrument.instrument_id'), nullable=False)
 
 
 #* A table for all the events.
