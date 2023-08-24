@@ -50,3 +50,6 @@ class Config:
   MAIL_USE_SSL = True if os.environ.get('MAIL_USE_SSL') == 'True' else False
   MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
   MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+
+  # CORS accept websites for API requests
+  CORS_ORIGINS = [os.environ.get("CORS_ORIGINS")]

@@ -3,3 +3,4 @@ zxcvbn
 pandas
 mysql-connector-python
 python-dotenv
+flask-cors

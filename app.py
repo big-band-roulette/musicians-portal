@@ -1,4 +1,5 @@
-from flask import Flask, url_for, redirect,render_template, request
+from flask import Flask, jsonify, url_for, redirect,render_template, request
+from flask_cors import CORS
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session
@@ -17,6 +18,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config.from_object(Config)
 crsf = CSRFProtect(app)
+CORS(app)
 # class R(Request):
 #     # Whitelist SRCF and/or custom domains to access the site via proxy.
 #     trusted_hosts = {"bbr.soc.srcf.net","dev.bigbandroulette.com"}
@@ -96,6 +98,19 @@ def upcoming():
     events = Event.query.all()
 
     return render_template('upcoming.html',events=events,form = confirmationForm)
+
+def get_user_counts_by_instrument():
+    user_counts = defaultdict(int)
+    instruments = db_session.query(Instrument).all()
+
+    for instrument in instruments:
+        user_counts[instrument.name] += 1
+
+    return dict(user_counts)
+
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    return jsonify({'message': f'{get_user_counts_by_instrument()}'})
 
 @app.route('/unregister/<int:event_id>',methods=['POST'])
 @auth_required()
