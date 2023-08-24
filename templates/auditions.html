@@ -59,10 +59,8 @@
                       <form method='post' action='{{ url_for("update_signup") }}'>
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         <input type="hidden" name="audition_id" value="{{ audition.id }}">
-                        <select name="instrument_id">
-                          {% for instrument in instruments %}
-                            <option value='{{ instrument.instrument_id }}'>{{ instrument.name }}</option>
-                          {% endfor %}
+                        <select name="instrument">
+                          {% for instrument in instruments %}<option value='{{ instrument }}'>{{ instrument }}</option>{% endfor %}
                         </select>
                         <button type="button"
                                 class="btn btn-secondary"

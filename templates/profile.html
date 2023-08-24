@@ -20,11 +20,6 @@
     </form>
     <ul>
       <li>
-        <strong>Username:</strong>
-        {{ current_user.username }}
-      </li>
-      <hr>
-      <li>
         <strong>Password:</strong>
         <a href='{{ url_for("security.change_password") }}'>click here to change password</a>
       </li>
@@ -41,9 +36,18 @@
       {% for role in current_user.band_roles %}<li>{{ role.role_type }}</li>{% endfor %}
     </ul>
     <hr>
-    <strong>Your Instruments</strong>
+    <h3>Your Instruments</h3>
     {% if current_user.instruments != [] %}
-      {% for instrument in current_user.instruments %}<p>{{ instrument.name }}</p>{% endfor %}
+      {% for instrument in current_user.instruments %}
+        <strong>{{ instrument.name }}</strong>
+        {% for attr in instrument.get_instrument_attributes() %}
+          <span class="attribute">{{ attr }}:</span>
+          <span class="value">{{ instrument[attr] }}</span>
+          <br>
+        {% endfor %}
+        takes solos: {{ instrument.takes_solos }}
+        <hr>
+      {% endfor %}
     {% else %}
       <p>You are not currently in the pool for any instruments, please go to auditions.</p>
     {% endif %}

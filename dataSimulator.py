@@ -1,5 +1,5 @@
-from models import Audition, AuditionUserLink, Event, \
-    Instrument,Musician, MusicianInstrumentLink,Singer,Arranger
+from models import Audition, Drums, Event, Guitar, \
+    Musician, Percussion, Piano, Saxophone,Singer,Arranger, Trombone
 from flask_security import hash_password
 import datetime
 
@@ -8,49 +8,19 @@ def commitData(session,className,data):
     session.bulk_insert_mappings(className, data)
     session.commit()
 
-def insert_instruments(db_session):
-            # Add the data for a big band
-        data = [
-            ("Trombone",1,1,1),
-            ("Trombone",2,1,0),
-            ("Trombone",3,0,0),
-            ("Bass Trombone",4,0,0),
-            ("Trumpet",1,1,1),
-            ("Trumpet",2,1,0),
-            ("Trumpet",3,0,0),
-            ("Trumpet",4,0,0),
-            ("Alto",1,1,0),
-            ("Alto",2,0,0),
-            ("Tenor",1,1,0),
-            ("Tenor",2,0,0),
-            ("Bari",1,0,0),
-            ("Bass",1,0,0),
-            ("Guitar",1,1,0),
-            ("Piano",1,1,0),
-            ("Drums",1,1,0),
-            ("Percussion",1,0,0),
-            ("Vocals",1,1,0)
-        ]
-        mapped_data = [{ "name": instrument,
-                        "sectionPosition": position,
-                        "takesSolos": solos,
-                        "highRange": high_range } 
-                        for instrument, position, solos, high_range in data]
-        commitData(db_session,Instrument,mapped_data)
-
 def insert_audition(db_session):
     data = [
-         ("Drums",datetime.datetime(2020,10,1,19,45,0),'London'),
-         ("Trumpet",datetime.datetime(2023,8,1,14,45,0),'Dubai'),
-         ("Saxophone",datetime.datetime(2023,10,1,4,45,0),'West Road Concert Hall'),
-         ("Saxophone",datetime.datetime(2023,10,1,10,45,0),'West Road Concert Hall'),
-         ("Saxophone",datetime.datetime(2023,10,1,11,45,0),'West Road Concert Hall'),
-         ("Saxophone",datetime.datetime(2023,10,1,19,55,0),'West Road Concert Hall'),
-         ("Saxophone",datetime.datetime(2023,10,1,18,45,0),'West Road Concert Hall'),
-         ("Saxophone",datetime.datetime(2023,10,1,20,45,0),'West Road Concert Hall'),
-         ("Saxophone",datetime.datetime(2023,10,1,16,45,0),'West Road Concert Hall'),
+         (datetime.datetime(2020,10,1,19,45,0),'London'),
+         (datetime.datetime(2023,8,1,14,45,0),'Dubai'),
+         (datetime.datetime(2023,10,1,4,45,0),'West Road Concert Hall'),
+         (datetime.datetime(2023,10,1,10,45,0),'West Road Concert Hall'),
+         (datetime.datetime(2023,10,1,11,45,0),'West Road Concert Hall'),
+         (datetime.datetime(2023,10,1,19,55,0),'West Road Concert Hall'),
+         (datetime.datetime(2023,10,1,18,45,0),'West Road Concert Hall'),
+         (datetime.datetime(2023,10,1,20,45,0),'West Road Concert Hall'),
+         (datetime.datetime(2023,10,1,16,45,0),'West Road Concert Hall'),
          ]
-    mapped_data = [{"name": name, "datetime": date, "location": location} for name, date, location in data]
+    mapped_data = [{"datetime": date, "location": location} for date, location in data]
     commitData(db_session,Audition,mapped_data)
 
 
@@ -132,16 +102,24 @@ def add_simulated_data(app,db_session):
     db_session.commit()
 
 
-    insert_instruments(db_session)
     insert_audition(db_session)
     insert_gig(db_session)
 
-    signup = AuditionUserLink(user_id = 1, audition_id = 1, instrument_id= 7)
-    db_session.add(signup)
-    db_session.commit()
 
-    userInstrument1 = MusicianInstrumentLink(user_id = 1, instrument_id= 1)
-    userInstrument2 = MusicianInstrumentLink(user_id = 1, instrument_id= 5)
-    db_session.add(userInstrument1)
-    db_session.add(userInstrument2)
-    db_session.commit()
+    instruments = [
+        Trombone(user_id=1, trombone_1=True, takes_solos=True),
+        Trombone(user_id=2, trombone_2=True, takes_solos=False),
+        Saxophone(user_id=1, alto_1=True, takes_solos=True),
+        Saxophone(user_id=2, alto_1=True, takes_solos=False),
+        Guitar(user_id=2, takes_solos=True),
+        Drums(user_id=2, takes_solos=False),
+        Piano(user_id=2, takes_solos=True),
+        Percussion(user_id=2, takes_solos=False),
+        Guitar(user_id=1, takes_solos=True),
+        Drums(user_id=1, takes_solos=False,bongos=True),
+        Piano(user_id=1, takes_solos=True),
+        Percussion(user_id=1, takes_solos=False,bongos=True),
+    ]
+    for instrument in instruments:
+        db_session.add(instrument)
+        db_session.commit()

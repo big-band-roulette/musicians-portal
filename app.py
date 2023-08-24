@@ -2,7 +2,7 @@ from flask import Flask, url_for, redirect,render_template, request
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session
-from models import Instrument, User, Role, Audition, AuditionUserLink, Event
+from models import Instrument, Saxophone, User, Role, Audition, AuditionUserLink, Event
 from config import Config
 from flask_mailman import Mail
 from dotenv import load_dotenv
@@ -40,15 +40,14 @@ class ConfirmationForm(FlaskForm):
 @auth_required()
 def auditions():
     auditions = Audition.query.all()
-    instruments = Instrument.query.all()
+    instruments = [instrument.__name__ for instrument in  Instrument.__subclasses__()]
     userAuditionLinks = AuditionUserLink.query.filter_by(user_id=current_user.id).all()
 
-    # Create dictionaries for quick access by ID (aud = audition, in = instrument)
+    # Create dictionaries for quick access by ID (aud = audition)
     aud_dict = {audition.id: audition for audition in auditions}
-    in_dict = {instrument.instrument_id: instrument for instrument in instruments}
 
     # Use a dictionary comprehension to create a list of tuples with audition dates and instrument names
-    user_audition_info =  [(aud_dict[link.audition_id].datetime, in_dict[link.instrument_id].name)for link in userAuditionLinks]
+    user_audition_info =  [(aud_dict[link.audition_id].datetime, link.instrument)for link in userAuditionLinks]
 
     # Group auditions by day
     auditions_by_day = defaultdict(list)
@@ -125,8 +124,8 @@ def update_signup():
 
     # If the signup doesn't exist, create a new one
     if not signup:
-        instrument_id = request.form['instrument_id']
-        signup = AuditionUserLink(user_id=current_user.id, audition_id=audition_id, instrument_id = instrument_id)
+        instrument = request.form['instrument']
+        signup = AuditionUserLink(user_id=current_user.id, audition_id=audition_id, instrument= instrument)
         db_session.add(signup)
         db_session.commit()
     else:

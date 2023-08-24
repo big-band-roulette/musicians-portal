@@ -1,3 +1,4 @@
+from sqlalchemy.inspection import inspect
 from flask_security import UserMixin, RoleMixin, AsaList
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.mutable import MutableList
@@ -6,8 +7,6 @@ from sqlalchemy import Boolean, DateTime, Column, Integer, \
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
-
-# TODO: Check that each event doesn't need it's own table with all the people playing in it
 
 # !Important: RolesUsers, Role and User are required by flask security. We can add user fields if needed
 class RolesUsers(Base):
@@ -52,28 +51,11 @@ class User(Base, UserMixin):
     notify_about_new_gigs = Column(Boolean(),nullable=False,default=True)
     notify_about_drop_outs = Column(Boolean(),nullable=False,default=True)
 
-    instruments = relationship('Instrument',secondary='player_instrument_link',back_populates='players')
+    instruments = relationship('Instrument', back_populates='users')
     band_roles = relationship('BandRole',back_populates='user')
     events = relationship('Event',secondary='event_user_link',back_populates='users')
     picked_events = relationship('Event',secondary='event_user_picked_link',back_populates='picked_users')
     auditions = relationship('Audition',secondary ='audition_signup_link', back_populates='signups')
-
-#* These tables represent the instruments, and which musicians have them.
-class MusicianInstrumentLink(Base):
-    __tablename__ = 'player_instrument_link'
-    id = Column(Integer, primary_key=True,autoincrement=True)
-    user_id = Column('playerID',Integer(),ForeignKey('user.id'))
-    instrument_id = Column('instrumentID',Integer(),ForeignKey('instrument.instrument_id'))
-    
-class Instrument(Base):
-    __tablename__= 'instrument'
-    instrument_id = Column(Integer, primary_key=True,autoincrement=True)
-    name = Column(String(255),nullable=False)
-    sectionPosition = Column(Integer, nullable=False)
-    takesSolos = Column(Boolean())
-    highRange = Column(Boolean())
-
-    players = relationship('User', secondary='player_instrument_link',back_populates='instruments')
 
 #* Define the models for Audition and Signup
 class Audition(Base):
@@ -89,8 +71,7 @@ class AuditionUserLink(Base):
     signup_link_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
     audition_id = Column(Integer, ForeignKey('audition.id'), nullable=False)
-    instrument_id = Column(Integer, ForeignKey('instrument.instrument_id'), nullable=False)
-
+    instrument = Column(String(200), nullable=False)
 
 #* A table for all the events.
 class Event(Base):
@@ -143,3 +124,114 @@ class Singer(BandRole):
 class Arranger(BandRole):
     __mapper_args__ = {'polymorphic_identity': 'arranger'}
     arranger_audition_video_url = Column(String(200),nullable=True)
+
+#! This section defines the instruments
+
+class Instrument(Base):
+    __tablename__ = 'instrument'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    takes_solos=Column(Boolean, nullable=False, default=False)
+    users = relationship('User',back_populates="instruments")
+    name = Column(String(50))
+    __mapper_args__ = {
+        "polymorphic_identity": "instrument",
+        "polymorphic_on": "name"
+    }
+    
+    @classmethod
+    def get_instrument_attributes(cls):
+        instrument_cols = inspect(cls).columns
+        parent_cols = inspect(Instrument).columns
+        instrument_attribute_names = [
+            attr.key for attr in instrument_cols if attr.key not in parent_cols
+        ]
+        return instrument_attribute_names
+
+class Saxophone(Instrument):
+    __tablename__ = 'saxophone'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+    alto_1 = Column(Boolean, nullable=False, default=False)
+    alto_2 = Column(Boolean, nullable=False, default=False)
+    tenor_1 = Column(Boolean, nullable=False, default=False)
+    tenor_2 = Column(Boolean, nullable=False, default=False)
+    bari = Column(Boolean, nullable=False, default=False)
+    sop = Column(Boolean, nullable=False, default=False)
+    flute = Column(Boolean, nullable=False, default=False)
+    clarinet = Column(Boolean, nullable=False, default=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }
+
+class Trumpet(Instrument):
+    __tablename__ = 'trumpet'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+    trumpet_1 = Column(Boolean, nullable=False, default=False)
+    trumpet_2 = Column(Boolean, nullable=False, default=False)
+    trumpet_3 = Column(Boolean, nullable=False, default=False)
+    trumpet_4 = Column(Boolean, nullable=False, default=False)
+    picc_trumpet = Column(Boolean, nullable=False, default=False)
+    range_on_trumpet = Column(String(50), nullable=False,default="c2-c4")
+    plays_flugal = Column(Boolean, nullable=False, default=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }
+
+class Trombone(Instrument):
+    __tablename__ = 'trombone'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+    trombone_1 = Column(Boolean, nullable=False, default=False)
+    trombone_2 = Column(Boolean, nullable=False, default=False)
+    trombone_3 = Column(Boolean, nullable=False, default=False)
+    range = Column(String(50), nullable=False,default="c2-c4")
+    tuba = Column(Boolean, nullable=False, default=False)
+    sousaphone = Column(Boolean, nullable=False, default=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }
+
+class Guitar(Instrument):
+    __tablename__ = 'guitar'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }
+
+class Piano(Instrument):
+    __tablename__ = 'piano'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }
+
+class Bass(Instrument):
+    __tablename__ = 'bass'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+    double_bass = Column(Boolean, nullable=False, default=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }
+
+class Drums(Instrument):
+    __tablename__ = 'drum'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+    bongos = Column(Boolean, nullable=False, default=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }
+
+class Percussion(Instrument):
+    __tablename__ = 'tuned percussion'
+    id = Column(ForeignKey("instrument.id"), primary_key=True)
+    bongos = Column(Boolean, nullable=False, default=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": __tablename__
+    }

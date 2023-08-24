@@ -30,3 +30,7 @@ Follow the `better comments` extension if working in vscode (or just copy pre-ex
 - Then if you just want to run the bash script on it's own (no systemct1) run `bash run.sh`.
 - Then run `python init_db.py`. This will seed the database.
 - Then start all the usual running of `run.sh` or `systemct1` (or if testing locally just run `app.py`)
+
+# To get all players of an instrument
+    # Query all users associated with saxophones
+    saxophone_users = User.query.join(Saxophone.users).all()
