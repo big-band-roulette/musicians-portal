@@ -60,3 +60,11 @@ strong {
 p {
   margin: 0;
 }
+
+.hover-container .show-on-hover {
+  display: none;
+}
+
+.hover-container:hover .show-on-hover {
+  display: block;
+}

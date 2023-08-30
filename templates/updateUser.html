@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if current_user.is_authenticated %}
+    <form method="post" action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_type" value="notify_about_new_gigs">
+      <label for="notify_about_new_gigs">Notify about new gigs:</label>
+      <input type="checkbox" id="notify_about_new_gigs" name="notify_about_new_gigs" {{ 'checked' if user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
+    </form>
+    <form method="post" action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_type" value="notify_about_drop_outs">
+      <label for="notify_about_drop_outs">Notify about drop-outs:</label>
+      <input type="checkbox" id="notify_about_drop_outs" name="notify_about_drop_outs" {{ 'checked' if user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
+    </form>
+    <form method="post" action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_type" value="notify_about_auditions">
+      <label for="notify_about_auditions">Receive Notifications:</label>
+      <input type="checkbox" name="notify_about_auditions" {{ 'checked' if user.notify_about_auditions else '' }} onchange="this.form.submit()">
+    </form>
+    <ul>
+      <li>
+        <strong>Password:</strong>
+        <a href='{{ url_for("security.change_password") }}'>click here to change password</a>
+      </li>
+      <hr>
+      <li>
+        <strong>Email:</strong>
+        {{ user.email }}
+      </li>
+      <!-- Add more list items as needed -->
+    </ul>
+    <hr>
+    <strong>Your Roles:</strong>
+    <ul>
+      {% for role in user.band_roles %}<li>{{ role.role_type }}</li>{% endfor %}
+    </ul>
+    <hr>
+    <h3>User Instruments</h3>
+    {% if user.instruments != [] %}
+      {% for instrument in user.instruments %}
+        <div class="hover-container">
+          <strong>{{ instrument.name }}</strong>
+          <div class="show-on-hover">
+            {% for attr in instrument.get_instrument_attributes() if attr.key != "takes_solos" %}
+              <span class="attribute">{{ attr.key }}:</span>
+              <span class="value">{{ instrument[attr.key] }}</span>
+              <br>
+            {% endfor %}
+            takes solos: {{ instrument.takes_solos }}
+          </div>
+        </div>
+        <form action="{{ url_for('delete_instrument',user_id=user.id) }}"
+              method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="instrument_type" value='{{ instrument.name }}'>
+          <button type="submit">{{ '×' }}</button>
+        </form>
+        <hr>
+      {% endfor %}
+    {% else %}
+      <p>You are not currently in the pool for any instruments, please go to auditions.</p>
+    {% endif %}
+    <h4>Add instrument</h4>
+    <select name="instrument_type" id="instrument_type">
+      {% for instrument in instruments %}
+        <option value="{{ instrument.__name__ }}">{{ instrument.__name__ }}</option>
+      {% endfor %}
+    </select>
+    {% for instrument in instruments %}
+      <div class="instrument-form-container" id="{{ instrument.__name__ }}-form">
+        <form method="post"
+              action="{{ url_for('add_instrument', user_id=user.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden"
+                 name="instrument_type"
+                 value='{{ instrument.__name__ }}'>
+          {% set instrument_form = instrument | create_instrument_form %}
+          {% for field in instrument_form if (field.name != 'csrf_token' and field.name != 'submit') %}
+            <div class="form-group">
+              {{ field.label }}
+              {{ field }}
+              {% if field.errors %}
+                <ul class="errors">
+                  {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button type="button"
+                  class="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#{{ instrument.__name__ }}Modal">Submit</button>
+        </form>
+        <hr>
+      </div>
+      <!-- Confirmation Modal -->
+      <div class="modal fade"
+           id="{{ instrument.__name__ }}Modal"
+           tabindex="-1"
+           role="dialog"
+           aria-labelledby="{{ instrument.__name__ }}ModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="{{ instrument.__name__ }}ModalLabel">Confirm Submission</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">{{ '×' }}</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to submit the form for {{ instrument.__name__ }}? This will modify any in place data.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="button"
+                      class="btn btn-primary confirm-submit"
+                      data-instrument-name="{{ instrument.__name__ }}">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    Login
+  {% endif %}
+{% endblock content %}
+{% block scripts %}
+  <script>
+        $(document).ready(function() {
+          let selectedInstrument = $('#instrument_type')
+
+          showInstrumentForm = (filter) => {
+            $('.instrument-form-container').hide(); // Hide all forms initially
+            $('#' + filter.val() + '-form').show(); // Show the selected form
+          }
+
+          showInstrumentForm(selectedInstrument)
+          selectedInstrument.change(function() {
+               showInstrumentForm($(this))
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const confirmSubmitButtons = document.querySelectorAll('.confirm-submit');
+
+        confirmSubmitButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const instrumentName = this.getAttribute('data-instrument-name');
+                const userInstruments = '{{ user.instruments }}';
+                const formId = `${instrumentName}-form`;
+                document.getElementById(formId).querySelector('form').submit();
+            });
+        });
+    });
+  </script>
+{% endblock scripts %}

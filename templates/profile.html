@@ -2,20 +2,22 @@
 {% block content %}
   <h1>Profile Page</h1>
   {% if current_user.is_authenticated %}
-    <form method="post" action='{{ url_for("toggle_notifications") }}'>
+    <form method="post"
+          action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="form_type" value="notify_about_new_gigs">
       <p>
         <label for="notify_about_new_gigs">Notify me about new gigs:</label>
-        <input type="checkbox" name="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
+        <input type="checkbox" name="notify_about_new_gigs" id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
       </p>
     </form>
-    <form method="post" action='{{ url_for("toggle_notifications") }}'>
+    <form method="post"
+          action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="form_type" value="notify_about_drop_outs">
       <p>
         <label for="notify_about_drop_outs">Notify me about drop-outs:</label>
-        <input type="checkbox" name="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
+        <input type="checkbox" name="notify_about_drop_outs" id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
       </p>
     </form>
     <ul>
@@ -39,13 +41,17 @@
     <h3>Your Instruments</h3>
     {% if current_user.instruments != [] %}
       {% for instrument in current_user.instruments %}
-        <strong>{{ instrument.name }}</strong>
-        {% for attr in instrument.get_instrument_attributes() %}
-          <span class="attribute">{{ attr }}:</span>
-          <span class="value">{{ instrument[attr] }}</span>
-          <br>
-        {% endfor %}
-        takes solos: {{ instrument.takes_solos }}
+        <div class="hover-container">
+          <strong>{{ instrument.name }}</strong>
+          <div class="show-on-hover">
+            {% for attr in instrument.get_instrument_attributes() if attr.key != "takes_solos" %}
+              <span class="attribute">{{ attr.key }}:</span>
+              <span class="value">{{ instrument[attr.key] }}</span>
+              <br>
+            {% endfor %}
+            takes solos: {{ instrument.takes_solos }}
+          </div>
+        </div>
         <hr>
       {% endfor %}
     {% else %}

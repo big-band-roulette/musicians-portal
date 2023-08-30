@@ -108,7 +108,6 @@ def add_simulated_data(app,db_session):
 
     instruments = [
         Trombone(user_id=1, trombone_1=True, takes_solos=True),
-        Trombone(user_id=2, trombone_2=True, takes_solos=False),
         Saxophone(user_id=1, alto_1=True, takes_solos=True),
         Saxophone(user_id=2, alto_1=True, takes_solos=False),
         Guitar(user_id=2, takes_solos=True),

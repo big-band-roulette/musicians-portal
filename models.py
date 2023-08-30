@@ -12,7 +12,7 @@ Base = declarative_base()
 class RolesUsers(Base):
     __tablename__ = 'roles_users'
     id = Column(Integer(), primary_key=True)
-    user_id = Column('user_id', Integer(), ForeignKey('user.id'))
+    user_id = Column('user_id', Integer(), ForeignKey('user.id', ondelete='CASCADE'))
     role_id = Column('role_id', Integer(), ForeignKey('role.id'))
 
 class Role(Base, RoleMixin):
@@ -51,11 +51,11 @@ class User(Base, UserMixin):
     notify_about_new_gigs = Column(Boolean(),nullable=False,default=True)
     notify_about_drop_outs = Column(Boolean(),nullable=False,default=True)
 
-    instruments = relationship('Instrument', back_populates='users')
-    band_roles = relationship('BandRole',back_populates='user')
+    instruments = relationship('Instrument', back_populates='users',cascade="all, delete-orphan")
+    band_roles = relationship('BandRole',back_populates='user',cascade="all, delete-orphan")
     events = relationship('Event',secondary='event_user_link',back_populates='users')
     picked_events = relationship('Event',secondary='event_user_picked_link',back_populates='picked_users')
-    auditions = relationship('Audition',secondary ='audition_signup_link', back_populates='signups')
+    auditions = relationship('Audition',secondary = 'audition_signup_link', back_populates='signups')
 
 #* Define the models for Audition and Signup
 class Audition(Base):
@@ -69,7 +69,7 @@ class Audition(Base):
 class AuditionUserLink(Base):
     __tablename__ = 'audition_signup_link'
     signup_link_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)  # The ID of the user who signed up
     audition_id = Column(Integer, ForeignKey('audition.id'), nullable=False)
     instrument = Column(String(200), nullable=False)
 
@@ -90,20 +90,20 @@ class Event(Base):
 class EventUserLink(Base):
     __tablename__ = 'event_user_link'
     event_user_link_id =  Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)  # The ID of the user who signed up
     event_id = Column(Integer,ForeignKey('event.event_id'),nullable=False)
 
 class EventUserPickedLink(Base):
     __tablename__ = 'event_user_picked_link'
     event_user_link_id =  Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)  # The ID of the user who signed up
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)  # The ID of the user who signed up
     event_id = Column(Integer,ForeignKey('event.event_id'),nullable=False)
 
 #* The different types of users (following the ERD).
 class BandRole(Base):
     __tablename__ = 'band_role'
     id = Column(Integer, primary_key=True,autoincrement=True)
-    user_id = Column(Integer(),ForeignKey('user.id'))
+    user_id = Column(Integer(),ForeignKey('user.id', ondelete='CASCADE'))
     role_type = Column(String(20))
 
     user = relationship('User',back_populates='band_roles')
@@ -130,7 +130,7 @@ class Arranger(BandRole):
 class Instrument(Base):
     __tablename__ = 'instrument'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     takes_solos=Column(Boolean, nullable=False, default=False)
     users = relationship('User',back_populates="instruments")
     name = Column(String(50))
@@ -143,10 +143,10 @@ class Instrument(Base):
     def get_instrument_attributes(cls):
         instrument_cols = inspect(cls).columns
         parent_cols = inspect(Instrument).columns
-        instrument_attribute_names = [
-            attr.key for attr in instrument_cols if attr.key not in parent_cols
+        instrument_attributes = [
+            attr for attr in instrument_cols if (attr.key not in parent_cols or attr.key == "takes_solos")
         ]
-        return instrument_attribute_names
+        return instrument_attributes
 
 class Saxophone(Instrument):
     __tablename__ = 'saxophone'

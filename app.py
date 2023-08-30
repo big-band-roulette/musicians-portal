@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
 from database import db_session
-from models import Instrument, Saxophone, User, Role, Audition, AuditionUserLink, Event
+from models import * #! All models should be imported automatically, even if more are defined
 from config import Config
 from flask_mailman import Mail
 from dotenv import load_dotenv
@@ -11,6 +11,9 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField,StringField
 from flask_wtf.csrf import CSRFProtect
 from collections import defaultdict
+from sqlalchemy.exc import IntegrityError
+from wtforms import BooleanField, StringField, SubmitField
+from sqlalchemy.sql.sqltypes import Boolean,String
 # Load environment variables from .env file
 load_dotenv()
 
@@ -63,12 +66,13 @@ def auditions():
                            audition_info = user_audition_info
                            )
 
-@app.route('/toggle_notifications',methods=['POST'])
+@app.route('/toggle_notifications/<int:user_id>',methods=['POST'])
 @auth_required()
-def toggle_notifications():
+def toggle_notifications(user_id):
+    user = db_session.query(User).get(user_id)
     notification_type = request.form['form_type']
     val = True if notification_type in request.form else False
-    setattr(current_user, notification_type, val)
+    setattr(user, notification_type, val)
     db_session.commit()
 
     # Redirect the user back to the original URL
@@ -154,4 +158,87 @@ def update_signup():
 @app.route('/admin')
 @roles_required('admin')
 def adminInterface():
-    return render_template('adminInterface.html')
+    users = User.query.all()
+    return render_template('adminInterface.html',users=users)
+
+def generate_instrument_form(subclass):
+    attributes = subclass.get_instrument_attributes()
+
+    class InstrumentForm(FlaskForm):
+        submit = SubmitField('Add Instrument')
+
+    for attribute in attributes:
+        column_type = getattr(subclass, attribute.key).property.columns[0].type
+        if isinstance(column_type, Boolean):
+            field = BooleanField(attribute.key)
+        elif isinstance(column_type, String):
+            field = StringField(attribute.key)
+        else:
+            # Handle other column types as needed
+            field = StringField(attribute.key)  # Default to StringField
+        setattr(InstrumentForm, attribute.key, field)
+    
+    return InstrumentForm
+
+@app.template_filter()
+def create_instrument_form(subclass):
+    Form = generate_instrument_form(subclass)
+    return Form()
+
+@app.route('/update_user/<int:user_id>')
+@roles_required('admin')
+def update_user(user_id):
+    user = User.query.get(user_id)
+    instruments = [instrument for instrument in  Instrument.__subclasses__()]
+    return render_template('updateUser.html',user=user, instruments = instruments)
+        
+@app.route('/delete_user/<int:user_id>',methods=['POST'])
+@roles_required('admin')
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    try:
+        db_session.delete(user)
+        db_session.commit()
+    except IntegrityError as e:
+        db_session.rollback()
+        print("Integrity error",e)
+    return redirect(url_for('adminInterface'))
+
+def instantiate_instrument_form(form_class, request_data):
+    return form_class(request_data)
+
+@app.route('/add_instrument/<int:user_id>', methods=['POST'])
+@roles_required('admin')
+def add_instrument(user_id):
+    user = db_session.query(User).get(user_id)
+    instrument_type = request.form['instrument_type']
+    old_instrument = Instrument.query.filter_by(user_id=user_id,name=instrument_type.lower()).first()
+    instruments = [instrument for instrument in  Instrument.__subclasses__()]
+    user_instruments = [instrument.name for instrument in  user.instruments]
+
+    instrument_subclass = globals()[instrument_type]  # Get the subclass by name
+    if instrument_subclass.__tablename__ in user_instruments:
+        print("instrument_already_defined, are you sure you want to override")
+    InstrumentForm = generate_instrument_form(instrument_subclass)
+
+    form = InstrumentForm(request.form)
+    if form.validate():
+        instrument = instrument_subclass()
+        for attribute in instrument_subclass.get_instrument_attributes():
+            setattr(instrument, attribute.key, getattr(form, attribute.key).data)
+        if old_instrument:
+            user.instruments.remove(old_instrument)
+        user.instruments.append(instrument)
+        db_session.commit()
+
+    return redirect(url_for('update_user',user_id=user_id))
+
+@app.route('/delete_instrument/<int:user_id>',methods=['POST'])
+@roles_required('admin')
+def delete_instrument(user_id):
+    user = db_session.query(User).get(user_id)
+    instrument_type = request.form['instrument_type']
+    old_instrument = Instrument.query.filter_by(user_id=user_id,name=instrument_type.lower()).first()
+    user.instruments.remove(old_instrument)
+    db_session.commit()
+    return redirect(url_for('update_user',user_id=user_id))

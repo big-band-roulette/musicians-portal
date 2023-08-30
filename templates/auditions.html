@@ -3,11 +3,12 @@
   <h1>Auditions</h1>
   This page is for the band auditions. Please click to sign up to an audition. Please remember that you only need to audition once, but if you would like to increase your weighting, you are welcome to audition again! The upcoming auditons are:
   <hr>
-  <form method="post" action='{{ url_for("toggle_notifications") }}'>
+  <form method="post"
+        action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="form_type" value="notify_about_auditions">
     <label for="notify_about_auditions">Receive Notifications:</label>
-    <input type="checkbox" name="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
+    <input type="checkbox" name="notify_about_auditions" id="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
   </form>
   <div class="booked_auditions">
     <h3>My Booked Auditions</h3>
