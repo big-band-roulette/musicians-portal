@@ -1,35 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
   {% if current_user.is_authenticated %}
-    <form method="post" action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
+    <form method="post"
+          action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="form_type" value="notify_about_new_gigs">
       <label for="notify_about_new_gigs">Notify about new gigs:</label>
       <input type="checkbox" id="notify_about_new_gigs" name="notify_about_new_gigs" {{ 'checked' if user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
     </form>
-    <form method="post" action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
+    <form method="post"
+          action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="form_type" value="notify_about_drop_outs">
       <label for="notify_about_drop_outs">Notify about drop-outs:</label>
       <input type="checkbox" id="notify_about_drop_outs" name="notify_about_drop_outs" {{ 'checked' if user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
     </form>
-    <form method="post" action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
+    <form method="post"
+          action='{{ url_for("toggle_notifications",user_id=user.id) }}'>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="form_type" value="notify_about_auditions">
       <label for="notify_about_auditions">Receive Notifications:</label>
-      <input type="checkbox" name="notify_about_auditions" {{ 'checked' if user.notify_about_auditions else '' }} onchange="this.form.submit()">
+      <input type="checkbox" name="notify_about_auditions" id="notify_about_auditions" {{ 'checked' if user.notify_about_auditions else '' }} onchange="this.form.submit()">
     </form>
     <ul>
-      <li>
-        <strong>Password:</strong>
-        <a href='{{ url_for("security.change_password") }}'>click here to change password</a>
-      </li>
-      <hr>
       <li>
         <strong>Email:</strong>
         {{ user.email }}
       </li>
-      <!-- Add more list items as needed -->
     </ul>
     <hr>
     <strong>Your Roles:</strong>
@@ -40,23 +37,27 @@
     <h3>User Instruments</h3>
     {% if user.instruments != [] %}
       {% for instrument in user.instruments %}
-        <div class="hover-container">
-          <strong>{{ instrument.name }}</strong>
-          <div class="show-on-hover">
-            {% for attr in instrument.get_instrument_attributes() if attr.key != "takes_solos" %}
-              <span class="attribute">{{ attr.key }}:</span>
-              <span class="value">{{ instrument[attr.key] }}</span>
-              <br>
-            {% endfor %}
-            takes solos: {{ instrument.takes_solos }}
-          </div>
+        <div class="instrument_box">
+          <li class="dropdown">
+            <div class="instrument-heading dropdown-toggle" data-toggle="dropdown">
+              <span class="caret text-capitalize">{{ instrument.name }}</span>
+            </div>
+            <div class="dropdown-menu">
+              {% for attr in instrument.get_instrument_attributes() if attr.key != "takes_solos" %}
+                <span class="attribute text-capitalize">{{ attr.key |replace('_', ' ') }}:</span>
+                <span class="value">{{ instrument[attr.key] }}</span>
+                <br>
+              {% endfor %}
+              Takes Solos: {{ instrument.takes_solos }}
+            </div>
+          </li>
+          <form action="{{ url_for('delete_instrument',user_id=user.id) }}"
+                method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="instrument_type" value='{{ instrument.name }}'>
+            <button type="submit">{{ '×' }}</button>
+          </form>
         </div>
-        <form action="{{ url_for('delete_instrument',user_id=user.id) }}"
-              method="post">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="hidden" name="instrument_type" value='{{ instrument.name }}'>
-          <button type="submit">{{ '×' }}</button>
-        </form>
         <hr>
       {% endfor %}
     {% else %}

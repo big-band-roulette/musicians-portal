@@ -2,58 +2,59 @@
 {% block content %}
   <h1>Profile Page</h1>
   {% if current_user.is_authenticated %}
-    <form method="post"
-          action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="form_type" value="notify_about_new_gigs">
-      <p>
-        <label for="notify_about_new_gigs">Notify me about new gigs:</label>
-        <input type="checkbox" name="notify_about_new_gigs" id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
-      </p>
-    </form>
-    <form method="post"
-          action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="form_type" value="notify_about_drop_outs">
-      <p>
-        <label for="notify_about_drop_outs">Notify me about drop-outs:</label>
-        <input type="checkbox" name="notify_about_drop_outs" id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
-      </p>
-    </form>
+    <h3>Details:</h3>
     <ul>
       <li>
-        <strong>Password:</strong>
+        <form method="post"
+              action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="form_type" value="notify_about_new_gigs">
+          <label for="notify_about_new_gigs">Notify me about new gigs:</label>
+          <input type="checkbox" name="notify_about_new_gigs" id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
+        </form>
+      </li>
+      <li>
+        <form method="post"
+              action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="form_type" value="notify_about_drop_outs">
+          <label for="notify_about_drop_outs">Notify me about drop-outs:</label>
+          <input type="checkbox" name="notify_about_drop_outs" id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
+        </form>
+      </li>
+      <li>
+        Password:
         <a href='{{ url_for("security.change_password") }}'>click here to change password</a>
       </li>
-      <hr>
       <li>
-        <strong>Email:</strong>
-        {{ current_user.email }}
+        Email:
+        <p>{{ current_user.email }}</p>
       </li>
       <!-- Add more list items as needed -->
     </ul>
-    <hr>
-    <strong>Your Roles:</strong>
+    <h3>Roles:</h3>
     <ul>
-      {% for role in current_user.band_roles %}<li>{{ role.role_type }}</li>{% endfor %}
+      {% for role in current_user.band_roles %}<li class="text-capitalize">{{ role.role_type }}</li>{% endfor %}
     </ul>
-    <hr>
-    <h3>Your Instruments</h3>
+    <h3>Instruments:</h3>
     {% if current_user.instruments != [] %}
-      {% for instrument in current_user.instruments %}
-        <div class="hover-container">
-          <strong>{{ instrument.name }}</strong>
-          <div class="show-on-hover">
-            {% for attr in instrument.get_instrument_attributes() if attr.key != "takes_solos" %}
-              <span class="attribute">{{ attr.key }}:</span>
-              <span class="value">{{ instrument[attr.key] }}</span>
-              <br>
-            {% endfor %}
-            takes solos: {{ instrument.takes_solos }}
-          </div>
-        </div>
-        <hr>
-      {% endfor %}
+      <ul>
+        {% for instrument in current_user.instruments %}
+          <li class="dropdown">
+            <div class="instrument-heading dropdown-toggle" data-toggle="dropdown">
+              <span class="caret text-capitalize">{{ instrument.name }}</span>
+            </div>
+            <div class="dropdown-menu">
+              {% for attr in instrument.get_instrument_attributes() if attr.key != "takes_solos" %}
+                <span class="attribute text-capitalize">{{ attr.key |replace('_', ' ') }}:</span>
+                <span class="value">{{ instrument[attr.key] }}</span>
+                <br>
+              {% endfor %}
+              Takes Solos: {{ instrument.takes_solos }}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
     {% else %}
       <p>You are not currently in the pool for any instruments, please go to auditions.</p>
     {% endif %}

@@ -14,10 +14,13 @@
 }
 
 h1 {
-  border: 2px #eee solid;
   color: var(--red);
   text-align:center;
   padding: 10px
+}
+
+h3 {
+  color: var(--dark-green);
 }
 
 .backgroundFilled {
@@ -25,8 +28,8 @@ h1 {
   color: var(--white);
 }
 
-a {
-  color: var(--ai-gray)
+.backgroundFilled a {
+    color: var(--white);
 }
 
 ul {
@@ -49,22 +52,53 @@ strong {
   color: var(--dark-green);
 }
 
-.registerButtonPlacer button {
-  float: none;
-}
-
-.registerButtonPlacer  {
-  text-align: right;
-}
-
 p {
   margin: 0;
 }
 
-.hover-container .show-on-hover {
-  display: none;
+.event {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 10px;
 }
 
-.hover-container:hover .show-on-hover {
-  display: block;
+.event_title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.event_details {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.event_button {
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+@media (max-width: 768px) {
+  .event {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .event_details {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .event_button {
+    align-self: flex-start;
+  }
+}
+
+.instrument_box {
+  display: flex;
+  justify-content: space-between;
+}
+
+.instrument-heading {
+  cursor: pointer;
 }
