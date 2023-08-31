@@ -78,7 +78,7 @@ class Event(Base):
     __tablename__ = 'event'
     event_id = Column(Integer,primary_key=True, autoincrement=True)
     name = Column(String(200))
-    description = Column(String(100))
+    description = Column(String(1000))
     datetime = Column(DateTime())
     location = Column(String(100))
 

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>Auditions</h1>
-  Click to sign up to get your instrument/s registered in the pool. If you would like to increase your weighting, you are welcome to signup again later!
+  Click to sign up to get your instrument/s registered in the pool. If you would like to increase your weighting, you are welcome to sign up again later!
   <hr>
   <form method="post"
         action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>

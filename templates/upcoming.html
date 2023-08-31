@@ -21,20 +21,31 @@
             <p>{{ event.datetime.strftime("%d %B, %Y -  %I:%M %p") }}</p>
             <p>{{ event.description }}</p>
           </div>
-          <div class="event_button">
-            {% if event not in current_user.events %}
-              <button type="button"
-                      class="btn btn-primary"
-                      data-toggle="modal"
-                      data-target="#confirmationModal{{ event.event_id }}">Join Pool</button>
-            {% else %}
-              <form method='post'
-                    action="{{ url_for('unregister', event_id=event.event_id) }}">
-                {{ form.csrf_token }}
-                <button type="submit" class="btn btn-primary">Unregister</button>
-              </form>
-            {% endif %}
-          </div>
+          {% if event.datetime >= event.datetime.now() %}
+            <div class="event_button">
+              {% if current_user.instruments != [] %}
+                {% if event not in current_user.events %}
+                  <button type="button"
+                          class="btn btn-primary"
+                          data-toggle="modal"
+                          data-target="#confirmationModal{{ event.event_id }}">Join Pool</button>
+                {% else %}
+                  <form method='post'
+                        action="{{ url_for('unregister', event_id=event.event_id) }}">
+                    {{ form.csrf_token }}
+                    <button type="submit" class="btn btn-primary">Unregister</button>
+                  </form>
+                {% endif %}
+              {% else %}
+                <a href='{{ url_for("auditions") }}'>
+                  <button type="button"
+                          class="blocked_button btn btn-secondary disabled tooltip">
+                    Join Pool<span class="tooltiptext">Audition on an instrument before joining pools</span>
+                  </button>
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
         <!-- Modal -->
         <div class="modal fade"

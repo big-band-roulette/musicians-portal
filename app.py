@@ -128,6 +128,7 @@ def unregister(event_id):
 @auth_required()
 def eventDetails():
     event = Event.query.get(request.args['event_id'])
+    print(event.description)
     return render_template('eventDetails.html',event=event)
 
 @app.teardown_appcontext

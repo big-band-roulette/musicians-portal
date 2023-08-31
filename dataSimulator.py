@@ -26,14 +26,12 @@ def insert_audition(db_session):
 
 def insert_gig(db_session):
     data = [("West Road Concert Hall",
-    "This one was a concert so memorable I have no more details about itup wi\
-    th on the spot and so there's probably a bug in it somewhere",
+    "This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere",
     datetime.datetime(2022,10,1,19,45,0),
     "Cambridge!" 
     ),
     ("Night at the Movies",
-    "Honestly I have no clue, but I came up wi\
-    th on the spot and so there's probably a bug in it somewhere",
+        "This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere This one was a concert so memorable I have no more details about itup with on the spot and so there's probably a bug in it somewhere",
     datetime.datetime(2023,9,1,19,45,0),
     "Cambridge!" 
     ),

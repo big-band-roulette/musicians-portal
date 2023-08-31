@@ -102,3 +102,36 @@ p {
 .instrument-heading {
   cursor: pointer;
 }
+
+.blocked_button {
+  cursor: not-allowed !important;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+  opacity: 1 !important;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1000;
+  top: -50%;
+  right: 100%;
+}
+
+@media (min-width: 600px) {
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+}
