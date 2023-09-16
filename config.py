@@ -1,6 +1,9 @@
 import os 
 import secrets
 from passlib import totp
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
   # Generate a nice key using secrets.token_urlsafe()

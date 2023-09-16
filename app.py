@@ -6,7 +6,6 @@ from database import db_session
 from models import * #! All models should be imported automatically, even if more are defined
 from config import Config
 from flask_mailman import Mail
-from dotenv import load_dotenv
 from flask_wtf import FlaskForm
 from wtforms import SubmitField,StringField
 from flask_wtf.csrf import CSRFProtect
@@ -14,8 +13,6 @@ from collections import defaultdict
 from sqlalchemy.exc import IntegrityError
 from wtforms import BooleanField, StringField, SubmitField
 from sqlalchemy.sql.sqltypes import Boolean,String
-# Load environment variables from .env file
-load_dotenv()
 
 # Create app
 app = Flask(__name__)
