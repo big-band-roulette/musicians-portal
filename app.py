@@ -41,17 +41,15 @@ class ConfirmationForm(FlaskForm):
 @app.route("/auditions")
 @auth_required()
 def auditions():
-    auditions = Audition.query.all()
     instruments = [instrument.__name__ for instrument in  Instrument.__subclasses__()]
-    userAuditionLinks = AuditionUserLink.query.filter_by(user_id=current_user.id).all()
 
-    # Create dictionaries for quick access by ID (aud = audition)
-    aud_dict = {audition.id: audition for audition in auditions}
-
-    # Use a dictionary comprehension to create a list of tuples with audition dates and instrument names
-    user_audition_info =  [(aud_dict[link.audition_id].datetime, link.instrument)for link in userAuditionLinks]
+    user_audition_info = [
+        (audition.datetime, audition.instrument)
+        for audition in current_user.auditions
+    ]
 
     # Group auditions by day
+    auditions = Audition.query.all()
     auditions_by_day = defaultdict(list)
     for audition in auditions:
         day = audition.datetime.date()
@@ -135,20 +133,18 @@ def shutdown_session(exception=None):
 @app.route('/update_signup', methods=['POST'])
 @auth_required()
 def update_signup():
-    audition_id = request.form['audition_id']
-    # Retrieve the Signup object for the current user and audition
-    signup = AuditionUserLink.query.filter_by(user_id=current_user.id,audition_id=audition_id).first()
-
+    audition = Audition.query.get(request.form['audition_id'])
     # If the signup doesn't exist, create a new one
-    if not signup:
-        instrument = request.form['instrument']
-        signup = AuditionUserLink(user_id=current_user.id, audition_id=audition_id, instrument= instrument)
-        db_session.add(signup)
-        db_session.commit()
+    if audition not in current_user.auditions:
+        current_user.auditions.append(audition)
+        print(request.form['instrument'])
+        audition.instrument = request.form['instrument']
     else:
         #remove the signup
-        db_session.delete(signup)
-        db_session.commit()
+        current_user.auditions.remove(audition)
+        # TODO: This is clunky and error-prone. Replace with assocation table
+        Audition.instrument = None
+    db_session.commit()
 
     return redirect(url_for('auditions'))
 

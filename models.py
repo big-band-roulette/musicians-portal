@@ -55,7 +55,7 @@ class User(Base, UserMixin):
     band_roles = relationship('BandRole',back_populates='user',cascade="all, delete-orphan")
     events = relationship('Event',secondary='event_user_link',back_populates='users')
     picked_events = relationship('Event',secondary='event_user_picked_link',back_populates='picked_users')
-    auditions = relationship('Audition',secondary = 'audition_signup_link', back_populates='signups')
+    auditions = relationship('Audition', back_populates='user')
 
 #* Define the models for Audition and Signup
 class Audition(Base):
@@ -64,14 +64,9 @@ class Audition(Base):
     details = Column(String(100), nullable=False)
     datetime = Column(DateTime())
     location = Column(String(100))
-    signups = relationship('User',secondary='audition_signup_link',back_populates='auditions')
-
-class AuditionUserLink(Base):
-    __tablename__ = 'audition_signup_link'
-    signup_link_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)  # The ID of the user who signed up
-    audition_id = Column(Integer, ForeignKey('audition.id'), nullable=False)
-    instrument = Column(String(200), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', back_populates='auditions')
+    instrument = Column(String(50))
 
 #* A table for all the events.
 class Event(Base):
