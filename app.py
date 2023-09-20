@@ -76,8 +76,9 @@ def toggle_notifications(user_id):
 
 @app.route('/index.html')
 @app.route('/')
+@auth_required()
 def index():
-    return redirect('/login')
+    return render_template('index.html')
 
 @app.route("/profile")
 @auth_required()

@@ -34,7 +34,7 @@
             crossorigin="anonymous"></script>
     <div class="flex-grow-1">
       <nav class="navbar navbar-expand-md navbar-light bg-light">
-        <a class="navbar-brand" href='{{ url_for("profile") }}'>
+        <a class="navbar-brand" href='/'>
           <img src="{{ url_for('static',filename='images/logo_colour.svg') }}"
                height="50"
                width="50"
@@ -56,10 +56,10 @@
                 <a class="nav-link" href='{{ url_for("auditions") }}'>Auditions</a>
               </li>
               <li class="nav-item active">
-                <a class="nav-link" href='{{ url_for("profile") }}'>Profile</a>
+                <a class="nav-link" href='{{ url_for("upcoming") }}'>Events</a>
               </li>
               <li class="nav-item active">
-                <a class="nav-link" href='{{ url_for("upcoming") }}'>Events</a>
+                <a class="nav-link" href='{{ url_for("profile") }}'>Profile</a>
               </li>
               {% if current_user.has_role("admin") %}
                 <li class="nav-item active">
@@ -118,7 +118,7 @@
           </div>
         </div>
       </div>
-      <div class="footer-copyright text-center py-3">© Big Band Roulette 2023</div>
+      <div class="footer-copyright text-center py-3">Copyright © Big Band Roulette 2023</div>
     </footer>
   </body>
 </html>
