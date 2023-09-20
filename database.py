@@ -27,6 +27,7 @@ def init_db(app):
     import models
 
     with db_session() as session:
+        # NB: This Base is the same object as Models.Base
         Base.metadata.drop_all(bind=engine)
         session.commit()
         Base.metadata.create_all(bind=engine)

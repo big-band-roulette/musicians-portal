@@ -26,6 +26,9 @@
         {% for audition in auditions %}
           <li>
             {{ audition.datetime.strftime("%I:%M %p") }} - {{ audition.location }}
+            {% if audition.user %}
+              Already Booked!
+            {% endif %}
             {% if audition not in current_user.auditions %}
               <button type="button"
                       class="btn btn-primary"

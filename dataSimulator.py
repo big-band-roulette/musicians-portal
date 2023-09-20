@@ -20,7 +20,7 @@ def insert_audition(db_session):
          (datetime.datetime(2023,10,1,20,45,0),'West Road Concert Hall'),
          (datetime.datetime(2023,10,1,16,45,0),'West Road Concert Hall'),
          ]
-    mapped_data = [{"datetime": date, "location": location} for date, location in data]
+    mapped_data = [{"datetime": date, "details": "TBD", "location": location} for date, location in data]
     commitData(db_session,Audition,mapped_data)
 
 
