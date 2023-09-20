@@ -33,7 +33,7 @@ class Config:
   SECURITY_TOTP_ISSUER = "Big Band Roulette"
 
   # change the post login page to auditions
-  SECURITY_POST_LOGIN_VIEW = '/auditions'
+  SECURITY_POST_LOGIN_VIEW = '/'
 
   # Tracking login statistics 
   SECURITY_TRACKABLE = True

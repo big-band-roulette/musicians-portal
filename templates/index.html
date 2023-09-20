@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Welcome</h1>
+  {% if current_user.is_authenticated %}
+    <div class="card text-white bg-danger mb-12">
+      <div class="card-body">
+        <h5 class="card-title">Musicians Portal Beta Release</h5>
+        <p class="card-text">
+          This is an early beta release of the musicians' portal. 
+          This means that bugs and oddities are likely to still be present.
+        </p>
+        <p class="card-text">
+          If you notice any issues or have any suggestions, please send an email to
+          <a href="mailto:mds@bigbandroulette.com">mds@bigbandroulette.com</a> or submit
+          an issue on the project's
+          <a href="https://github.com/big-band-roulette/musicians-portal">Github page</a>.
+        </p>
+      </div>
+    </div>
+    <br>
+    <p>
+      Welcome to the Big Band Roulette musicians' portal. This is the one-stop shop for everything related to playing with us.
+    </p>
+    <br>
+    <p>
+      If you have just registered on the portal, the first step is to go to the auditions page and sign up for a slot.
+    </p>
+    <br>
+    <p>
+      Once you've had your audition, you will be able to register for upcoming events on the events page,
+      for a chance to be randomly selected to join the band.
+    </p>
+  {% else %}
+    Login
+  {% endif %}
+  <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
+{% endblock content %}
