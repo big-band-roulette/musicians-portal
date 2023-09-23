@@ -55,17 +55,31 @@ class User(Base, UserMixin):
     band_roles = relationship('BandRole',back_populates='user',cascade="all, delete-orphan")
     events = relationship('Event',secondary='event_user_link',back_populates='users')
     picked_events = relationship('Event',secondary='event_user_picked_link',back_populates='picked_users')
-    auditions = relationship('Audition', back_populates='user')
+    audition_slots = relationship('AuditionSlot', back_populates='user')
+
+class AuditionSession(Base):
+    __tablename__ = 'audition_session'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    musical_director = Column(String(100))
+    location = Column(String(100))
+    start_time = Column(DateTime())
+    end_time = Column(DateTime())
+    audition_slots = relationship('AuditionSlot', back_populates='audition_session')
 
 #* Define the models for Audition and Signup
-class Audition(Base):
+class AuditionSlot(Base):
     __tablename__ = 'audition'
     id = Column(Integer, primary_key=True,autoincrement=True)
-    details = Column(String(100), nullable=False)
-    datetime = Column(DateTime())
-    location = Column(String(100))
+    start_time = Column(DateTime())
+    end_time = Column(DateTime())
+
+    audition_session_id = Column(Integer, ForeignKey('audition_session.id'))
+    audition_session = relationship('AuditionSession', back_populates='audition_slots')
+
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship('User', back_populates='auditions')
+    user = relationship('User', back_populates='audition_slots')
+
+    # Audition information – null if not booked
     instrument = Column(String(50))
 
 #* A table for all the events.

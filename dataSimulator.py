@@ -1,4 +1,4 @@
-from models import Audition, Drums, Event, Guitar, \
+from models import AuditionSlot, AuditionSession, Drums, Event, Guitar, \
     Musician, Percussion, Piano, Saxophone,Singer,Arranger, Trombone
 from flask_security import hash_password
 import datetime
@@ -9,20 +9,37 @@ def commitData(session,className,data):
     session.commit()
 
 def insert_audition(db_session):
-    data = [
-         (datetime.datetime(2020,10,1,19,45,0),'London'),
-         (datetime.datetime(2023,8,1,14,45,0),'Dubai'),
-         (datetime.datetime(2023,10,1,4,45,0),'West Road Concert Hall'),
-         (datetime.datetime(2023,10,1,10,45,0),'West Road Concert Hall'),
-         (datetime.datetime(2023,10,1,11,45,0),'West Road Concert Hall'),
-         (datetime.datetime(2023,10,1,19,55,0),'West Road Concert Hall'),
-         (datetime.datetime(2023,10,1,18,45,0),'West Road Concert Hall'),
-         (datetime.datetime(2023,10,1,20,45,0),'West Road Concert Hall'),
-         (datetime.datetime(2023,10,1,16,45,0),'West Road Concert Hall'),
-         ]
-    mapped_data = [{"datetime": date, "details": "TBD", "location": location} for date, location in data]
-    commitData(db_session,Audition,mapped_data)
+    # Create audition sessions
+    mapped_data = [
+        {
+            "musical_director": "Tim",
+            "start_time": datetime.datetime(2021, 9, 14, 14, 0, 0),
+            "end_time": datetime.datetime(2021, 9, 14, 18, 0, 0),
+            "location": "St John's College",
+        },
+        {
+            "musical_director": "Carl",
+            "start_time": datetime.datetime(2021, 9, 15, 14, 0, 0),
+            "end_time": datetime.datetime(2021, 9, 15, 17, 0, 0),
+            "location": "Trinity Hall",
+        },
+    ]
+    commitData(db_session, AuditionSession, mapped_data)
 
+    # Fill audition slots
+    slot_length = datetime.timedelta(minutes=30)
+    slot_offset = datetime.timedelta(minutes=15)
+    audition_sessions = db_session.query(AuditionSession).all()
+    for audition_session in audition_sessions:
+        start_time = audition_session.start_time
+        end_time = start_time + slot_length
+        while end_time <= audition_session.end_time:
+            audition_session.audition_slots.append(
+                AuditionSlot(start_time=start_time, end_time=end_time)
+            )
+            start_time += slot_offset
+            end_time += slot_offset
+    db_session.commit()
 
 def insert_gig(db_session):
     data = [("West Road Concert Hall",

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, url_for, redirect,render_template, request
+from flask import Flask, jsonify, url_for, redirect,render_template, request, flash
 from flask_cors import CORS
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
@@ -43,22 +43,23 @@ class ConfirmationForm(FlaskForm):
 def auditions():
     instruments = [instrument.__name__ for instrument in  Instrument.__subclasses__()]
 
-    user_audition_info = [
-        (audition.datetime, audition.instrument)
-        for audition in current_user.auditions
+    audition_sessions = db_session.query(AuditionSession).all()
+    sessions_slots = [len(session.audition_slots) for session in audition_sessions]
+    sessions_remaining = [
+        len([slot for slot in session.audition_slots if slot.user is None])
+        for session in audition_sessions
     ]
 
-    # Group auditions by day
-    auditions = Audition.query.all()
-    auditions_by_day = defaultdict(list)
-    for audition in auditions:
-        day = audition.datetime.date()
-        auditions_by_day[day].append(audition)
+    audition_sessions_with_availability = [
+        (audition_session, session_slots, session_remaining)
+        for audition_session, session_slots, session_remaining in zip(audition_sessions, sessions_slots, sessions_remaining)
+    ]
+
+    print(audition_sessions_with_availability)
 
     return render_template('auditions.html', 
-                           auditions_by_day=auditions_by_day, 
+                           audition_sessions_with_availability=audition_sessions_with_availability, 
                            instruments = instruments,
-                           audition_info = user_audition_info
                            )
 
 @app.route('/toggle_notifications/<int:user_id>',methods=['POST'])
@@ -134,17 +135,21 @@ def shutdown_session(exception=None):
 @app.route('/update_signup', methods=['POST'])
 @auth_required()
 def update_signup():
-    audition = Audition.query.get(request.form['audition_id'])
+    audition_slot = AuditionSlot.query.get(request.form['audition_id'])
     # If the signup doesn't exist, create a new one
-    if audition not in current_user.auditions:
-        current_user.auditions.append(audition)
-        print(request.form['instrument'])
-        audition.instrument = request.form['instrument']
+    if audition_slot not in current_user.audition_slots:
+        # Check slot is still free
+        if audition_slot.user is not None:
+            flash('Slot is no longer free!')
+            return redirect(url_for('auditions'))
+        current_user.audition_slots.append(audition_slot)
+        audition_slot.instrument = request.form['instrument']
     else:
+        # TODO: these should probably be separate routes
         #remove the signup
-        current_user.auditions.remove(audition)
+        current_user.audition_slots.remove(audition_slot)
         # TODO: This is clunky and error-prone. Replace with assocation table
-        Audition.instrument = None
+        audition_slot.instrument = None
     db_session.commit()
 
     return redirect(url_for('auditions'))
