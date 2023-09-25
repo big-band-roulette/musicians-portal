@@ -41,7 +41,7 @@ li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 2px;
 }
 
 i {
@@ -138,4 +138,13 @@ p {
 
 .card a {
   color: var(--white);
+}
+
+button.acc-btn {
+  /* create a grid */
+  display: grid;
+  /* create colums. 1fr means use available space */
+  grid-template-columns: 1fr max-content max-content;
+  align-items: center;
+  grid-gap: 10px;
 }

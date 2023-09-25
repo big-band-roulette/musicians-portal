@@ -1,87 +1,130 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>Auditions</h1>
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
   Click to sign up to get your instrument/s registered in the pool. If you would like to increase your weighting, you are welcome to sign up again later!
   <hr>
   <div class="booked_auditions">
-    <h3>Booked</h3>
-    {% for audition_date, instrument_name in audition_info %}
-      <li>{{ audition_date.strftime("%d %B, %Y -  %I:%M %p") }} ({{ instrument_name }})</li>
-    {% endfor %}
+    <h3>Your Audition Slots</h3>
+    {% if current_user.audition_slots %}
+    <div class="list-group">
+      {% for audition_slot in current_user.audition_slots %}
+      <div class="list-group-item flex-column align-items-start">
+        <h5 class="mb-1">
+          {{audition_slot.start_time.strftime("%A, %d %B, %Y")}}
+          {{audition_slot.start_time.strftime("(%I:%M %p")}}
+          &#8212;
+          {{audition_slot.end_time.strftime("%I:%M %p)")}}
+        </h5>
+        <div class="d-flex w-100 justify-content-between">
+        <ul class="mb-0">
+          <li>Location: {{audition_slot.audition_session.location}}</li>
+          <li>Instrument: {{audition_slot.instrument}}</li>
+        </ul>
+        <form action='{{ url_for("update_signup") }}' method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="audition_id" value="{{ audition_slot.id }}">
+          <button type="submit" class="btn btn-primary">Remove</button>
+        </form>
+      </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <p>You have not signed up for any audition slots yet.</p>
+    {% endif %}
     <hr>
   </div>
-  <h3>Upcoming</h3>
+  <h3>Audition Slot Booking</h3>
   <div class="card text-white bg-info my-4 shadow">
     <div class="card-body">
-      <h5 class="card-title">New Audition Notifications</h5>
+      <h5 class="card-title">New Audition Slots Notifications</h5>
       <p class="card-text">
         You can enable email notifications for new audition slots availability on your profile page.
       </p>
     </div>
   </div>
-  {% for day, auditions in auditions_by_day.items() %}
-    <h4>{{ day.strftime("%d %B, %Y") }}</h4>
-    <!-- Display date in a readable format -->
-    <div>
-      <ul>
-        {% for audition in auditions %}
-          <li>
-            {{ audition.datetime.strftime("%I:%M %p") }} - {{ audition.location }}
-            {% if audition.user %}
-              Already Booked!
-            {% endif %}
-            {% if audition not in current_user.auditions %}
-              <button type="button"
-                      class="btn btn-primary"
-                      data-toggle="modal"
-                      data-target="#signUpToggleModal{{ audition.id }}">Sign up</button>
-            {% else %}
-              <form action='{{ url_for("update_signup") }}' method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="audition_id" value="{{ audition.id }}">
-                <button type="submit" class="btn btn-primary">Remove</button>
-              </form>
-            {% endif %}
-            <!-- Modal -->
-            <div class="modal fade"
-                 id="signUpToggleModal{{ audition.id }}"
-                 tabindex="-1"
-                 role="dialog"
-                 aria-labelledby="signUpToggleModalLabel"
-                 aria-hidden="true">
-              <!-- Modal content and form -->
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Choose Instrument</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">{{ '×' }}</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">Which instrument are you auditioning on?</div>
-                  <div class="modal-footer">
-                    <form method='post' action='{{ url_for("update_signup") }}'>
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                      <input type="hidden" name="audition_id" value="{{ audition.id }}">
-                      <select name="instrument">
-                        {% for instrument in instruments %}<option value='{{ instrument }}'>{{ instrument }}</option>{% endfor %}
-                      </select>
-                      <button type="button"
-                              class="btn btn-secondary"
-                              data-dismiss="modal"
-                              aria-label="Close">
-                        <span aria-hidden="true">Cancel Registration</span>
-                      </button>
-                      <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                  </div>
-                </div>
+  <div class="accordion">
+  {% for audition_session, session_slots, sessions_remaining in audition_sessions_with_availability %}
+  <div class="accordion-item" id="accordian">
+    <h5 class="accordion-header" id="heading{{audition_session.id}}">
+    <button class="acc-btn accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{audition_session.id}}" aria-expanded="true" aria-controls="collapse{{audition_session.id}}">
+      <span>
+        {{audition_session.start_time.strftime("%A, %d %B, %Y")}}
+        {{audition_session.start_time.strftime("(%I:%M %p")}}
+        &#8212;
+        {{audition_session.end_time.strftime("%I:%M %p)")}}
+      </span>
+      <span class="badge rounded-pill bg-primary">{{sessions_remaining}}/{{session_slots}}</span>
+    </button>
+    </h5>
+    <div id="collapse{{audition_session.id}}" class="accordion-collapse collapse" aria-labelledby="heading{{audition_session.id}}" data-bs-parent="#accordion">
+      <div class="accordion-body">
+        <h5>Audition Session Details</h5>
+        <div class="card">
+          <div class="card-body">
+            <ul class="mb-0">
+            <li>Date: {{audition_session.start_time.strftime("%A, %d %B, %Y")}}</li>
+            <li>Time: {{audition_session.start_time.strftime("%I:%M %p")}} &#8212; {{audition_session.end_time.strftime("%I:%M %p")}}</li>
+            <li>Location: {{audition_session.location}}</li>
+           </ul>
+          </div>
+        </div>
+        <br>
+        <h5>Audition Slots</h5>
+        <ul class="list-group">
+          {% for audition_slot in audition_session.audition_slots %}
+          <li class="list-group-item d-flex justify-content-between align-items-center {{'disabled' if audition_slot.user_id else ''}}">
+            {{ audition_slot.start_time.strftime("%I:%M %p") }}
+            &#8212;
+            {{ audition_slot.end_time.strftime("%I:%M %p") }}
+            <button type="button"
+                    class="btn btn-primary {{'disabled' if audition_slot.user_id else ''}}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#signUpToggleModal{{ audition_slot.id }}">Sign Up</button>
+          <!-- Modal -->
+          <div class="modal fade"
+          id="signUpToggleModal{{ audition_slot.id }}"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="signUpToggleModalLabel"
+          aria-hidden="true">
+          <!-- Modal content and form -->
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Audition Sign Up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
+              <form method='post' action='{{ url_for("update_signup") }}'>
+              <div class="modal-body">
+                <p>Which instrument are you auditioning on?</p>
+                <select class="form-select mt-2" name="instrument">
+                  {% for instrument in instruments %}<option value='{{ instrument }}'>{{ instrument }}</option>{% endfor %}
+                </select>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+              </div>
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="audition_id" value="{{ audition_slot.id }}">
+            </form>
             </div>
+          </div>
+          </div>
           </li>
-        {% endfor %}
-      </ul>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
+  </div>
   {% endfor %}
+  </div>
   <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
 {% endblock content %}
