@@ -16,9 +16,9 @@
             <form method="post" action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="hidden" name="form_type" value="notify_about_new_gigs">
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" name="notify_about_new_gigs" id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
-                <label class="custom-control-label" for="notify_about_new_gigs"></label>
+              <div class="form-check form-switch">
+                <input type="checkbox" role="switch" class="form-check-input" name="notify_about_new_gigs" id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
+                <label class="form-check-label" for="notify_about_new_gigs"></label>
               </div>
             </form>
           </div>
@@ -34,9 +34,9 @@
             <form method="post" action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="hidden" name="form_type" value="notify_about_auditions">
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" name="notify_about_auditions" id="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
-                <label class="custom-control-label" for="notify_about_auditions"></label>
+              <div class="form-check form-switch">
+                <input type="checkbox" role="switch" class="form-check-input" name="notify_about_auditions" id="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
+                <label class="form-check-label" for="notify_about_auditions"></label>
               </div>
             </form>
           </div>
@@ -52,9 +52,9 @@
             <form method="post" action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="hidden" name="form_type" value="notify_about_drop_outs">
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" name="notify_about_drop_outs" id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
-                <label class="custom-control-label" for="notify_about_drop_outs"></label>
+              <div class="form-check form-switch">
+                <input type="checkbox" role="switch" class="form-check-input" name="notify_about_drop_outs" id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
+                <label class="form-check-label" for="notify_about_drop_outs"></label>
               </div>
             </form>
           </div>
