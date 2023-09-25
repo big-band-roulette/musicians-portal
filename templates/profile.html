@@ -2,6 +2,7 @@
 {% block content %}
   <h1>Profile Page</h1>
   {% if current_user.is_authenticated %}
+    <!--- Notifications-->
     <h3 class="mb-0 mt-5">Notification Preferences</h3>
     <p>Select when you will recieve email notifications from the portal.</p>
     <br>
@@ -62,6 +63,21 @@
       </div>
     </div>
     <hr class="my-4" />
+    <!-- Themes --->
+    <h3 class="mb-0 mt-5">Theme Suggestions</h3>
+    <p>Use this free text area to suggest themes and setlist ideas that you would like to see us play.</p>
+    <p>
+      If we go for a theme that is similar to your suggestion, you will be weighted more favourably to be selected for that band. </p>
+    <br>
+    <form method="post" action='{{ url_for("update_theme_suggestions", user_id=current_user.id)}}'>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <textarea class="form-control mb-4" id="theme_suggestions" name="theme_suggestions" rows="3">{{ current_user.theme_suggestions }}</textarea>
+      </div>
+      <div class="d-grid gap-2">
+      <button type="submit" class="btn btn-primary btn-block mb-4">Save</button>
+      </div>
+    </form>
     <h3>Details:</h3>
     <ul>
       <li>

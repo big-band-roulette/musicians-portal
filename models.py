@@ -51,6 +51,9 @@ class User(Base, UserMixin):
     notify_about_new_gigs = Column(Boolean(),nullable=False,default=True)
     notify_about_drop_outs = Column(Boolean(),nullable=False,default=True)
 
+    # Theme suggestions
+    theme_suggestions = Column(String(1000), default="")
+
     instruments = relationship('Instrument', back_populates='users',cascade="all, delete-orphan")
     band_roles = relationship('BandRole',back_populates='user',cascade="all, delete-orphan")
     events = relationship('Event',secondary='event_user_link',back_populates='users')
