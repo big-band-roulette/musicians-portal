@@ -86,6 +86,19 @@ def update_theme_suggestions(user_id):
     original_url = request.headers.get('Referer')
     return redirect(original_url)
 
+@app.route('/update_instrument_preferences/<int:instrument_id>',methods=['POST'])
+@auth_required()
+def update_instrument_preferences(instrument_id):
+    instrument = db_session.query(Instrument).get(instrument_id)
+    attribute = request.form['attr']
+    val = True if attribute in request.form else False
+    setattr(instrument, attribute, val)
+    db_session.commit()
+
+    # Redirect the user back to the original URL
+    original_url = request.headers.get('Referer')
+    return redirect(original_url)
+
 @app.route('/index.html')
 @app.route('/')
 @auth_required()

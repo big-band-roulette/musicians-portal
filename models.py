@@ -163,14 +163,14 @@ class Instrument(Base):
 class Saxophone(Instrument):
     __tablename__ = 'saxophone'
     id = Column(ForeignKey("instrument.id"), primary_key=True)
-    alto_1 = Column(Boolean, nullable=False, default=False)
-    alto_2 = Column(Boolean, nullable=False, default=False)
-    tenor_1 = Column(Boolean, nullable=False, default=False)
-    tenor_2 = Column(Boolean, nullable=False, default=False)
-    bari = Column(Boolean, nullable=False, default=False)
-    sop = Column(Boolean, nullable=False, default=False)
-    flute = Column(Boolean, nullable=False, default=False)
-    clarinet = Column(Boolean, nullable=False, default=False)
+    seat_alto_1 = Column(Boolean, nullable=False, default=False)
+    seat_alto_2 = Column(Boolean, nullable=False, default=False)
+    seat_tenor_1 = Column(Boolean, nullable=False, default=False)
+    seat_tenor_2 = Column(Boolean, nullable=False, default=False)
+    seat_bari = Column(Boolean, nullable=False, default=False)
+    dbl_sop = Column(Boolean, nullable=False, default=False)
+    dbl_flute = Column(Boolean, nullable=False, default=False)
+    dbl_clarinet = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {
         "polymorphic_identity": __tablename__
@@ -179,13 +179,13 @@ class Saxophone(Instrument):
 class Trumpet(Instrument):
     __tablename__ = 'trumpet'
     id = Column(ForeignKey("instrument.id"), primary_key=True)
-    trumpet_1 = Column(Boolean, nullable=False, default=False)
-    trumpet_2 = Column(Boolean, nullable=False, default=False)
-    trumpet_3 = Column(Boolean, nullable=False, default=False)
-    trumpet_4 = Column(Boolean, nullable=False, default=False)
-    picc_trumpet = Column(Boolean, nullable=False, default=False)
-    range_on_trumpet = Column(String(50), nullable=False,default="c2-c4")
-    plays_flugal = Column(Boolean, nullable=False, default=False)
+    seat_trumpet_1 = Column(Boolean, nullable=False, default=False)
+    seat_trumpet_2 = Column(Boolean, nullable=False, default=False)
+    seat_trumpet_3 = Column(Boolean, nullable=False, default=False)
+    seat_trumpet_4 = Column(Boolean, nullable=False, default=False)
+    dbl_piccolo_trumpet = Column(Boolean, nullable=False, default=False)
+    range = Column(String(50), nullable=False,default="c2-c4")
+    dbl_flugal_horn = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {
         "polymorphic_identity": __tablename__
@@ -194,12 +194,13 @@ class Trumpet(Instrument):
 class Trombone(Instrument):
     __tablename__ = 'trombone'
     id = Column(ForeignKey("instrument.id"), primary_key=True)
-    trombone_1 = Column(Boolean, nullable=False, default=False)
-    trombone_2 = Column(Boolean, nullable=False, default=False)
-    trombone_3 = Column(Boolean, nullable=False, default=False)
+    seat_trombone_1 = Column(Boolean, nullable=False, default=False)
+    seat_trombone_2 = Column(Boolean, nullable=False, default=False)
+    seat_trombone_3 = Column(Boolean, nullable=False, default=False)
+    seat_trombone_4 = Column(Boolean, nullable=False, default=False)
     range = Column(String(50), nullable=False,default="c2-c4")
-    tuba = Column(Boolean, nullable=False, default=False)
-    sousaphone = Column(Boolean, nullable=False, default=False)
+    dbl_tuba = Column(Boolean, nullable=False, default=False)
+    dbl_sousaphone = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {
         "polymorphic_identity": __tablename__
@@ -224,7 +225,7 @@ class Piano(Instrument):
 class Bass(Instrument):
     __tablename__ = 'bass'
     id = Column(ForeignKey("instrument.id"), primary_key=True)
-    double_bass = Column(Boolean, nullable=False, default=False)
+    dbl_double_bass = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {
         "polymorphic_identity": __tablename__
@@ -233,7 +234,7 @@ class Bass(Instrument):
 class Drums(Instrument):
     __tablename__ = 'drum'
     id = Column(ForeignKey("instrument.id"), primary_key=True)
-    bongos = Column(Boolean, nullable=False, default=False)
+    dbl_bongos = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {
         "polymorphic_identity": __tablename__
@@ -242,7 +243,7 @@ class Drums(Instrument):
 class Percussion(Instrument):
     __tablename__ = 'tuned percussion'
     id = Column(ForeignKey("instrument.id"), primary_key=True)
-    bongos = Column(Boolean, nullable=False, default=False)
+    dbl_bongos = Column(Boolean, nullable=False, default=False)
 
     __mapper_args__ = {
         "polymorphic_identity": __tablename__
