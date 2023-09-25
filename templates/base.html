@@ -27,24 +27,26 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
             crossorigin="anonymous"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-                    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-                    crossorigin="anonymous"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
-                    integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
-                    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+            integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+            integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+            crossorigin="anonymous"></script>
+
     <div class="flex-grow-1">
       <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <div class="container-fluid">
         <a class="navbar-brand" href='/'>
-          <img src="{{ url_for('static',filename='images/logo_colour.svg') }}"
+          <img src="{{ url_for('static',filename='images/navbar_logo.png') }}"
                height="50"
                width="50"
                alt="">
         </a>
         <button class="navbar-toggler"
                 type="button"
-                data-toggle="collapse"
-                data-target="#navbarNav"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
                 aria-controls="navbarNav"
                 aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -69,7 +71,7 @@
               {% endif %}
             </ul>
           {% endif %}
-          <ul class="navbar-nav ml-auto">
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item active">
               <a class="nav-link" href='{{ url_for("security.login") }}'>
                 {% if current_user.is_authenticated %}
@@ -85,6 +87,7 @@
               </li>
             {% endif %}
           </ul>
+        </div>
         </div>
       </nav>
       <div class="container bg-image">
