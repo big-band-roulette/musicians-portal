@@ -159,6 +159,17 @@ class Instrument(Base):
             attr for attr in instrument_cols if (attr.key not in parent_cols or attr.key == "takes_solos")
         ]
         return instrument_attributes
+    
+    @classmethod
+    def has_doublings(cls):
+        instrument_cols = inspect(cls).columns
+        return any([col.key.startswith("dbl_") for col in instrument_cols])
+    
+    @classmethod
+    def has_seats(cls):
+        instrument_cols = inspect(cls).columns
+        return any([col.key.startswith("seat_") for col in instrument_cols])
+
 
 class Saxophone(Instrument):
     __tablename__ = 'saxophone'

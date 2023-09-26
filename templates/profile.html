@@ -14,6 +14,7 @@
         <div class="card-body">
           <!-- Seat Preferences --->
           <h5>Seat Preferences</h5>
+          {% if instrument.has_seats() %}
           <ul class="list-group">
             {% for attr in instrument.get_instrument_attributes() if attr.key.startswith('seat') %}
               <li class="list-group-item">
@@ -26,8 +27,12 @@
               </li>
             {% endfor %}
           </ul>
+          {% else %}
+          <p>N/A</p>
+          {% endif %}
           <!-- Doubling --->
           <h5 class="mt-3">Doubling</h5>
+          {% if instrument.has_doublings() %}
           <ul class="list-group">
             {% for attr in instrument.get_instrument_attributes() if attr.key.startswith('dbl') %}
               <li class="list-group-item">
@@ -40,6 +45,9 @@
               </li>
             {% endfor %}
           </ul>
+          {% else %}
+          <p>N/A</p>
+          {% endif %}
         </div>
           
       </div>
