@@ -75,16 +75,14 @@ def toggle_notifications(user_id):
     original_url = request.headers.get('Referer')
     return redirect(original_url)
 
-@app.route('/update_theme_suggestions/<int:user_id>',methods=['POST'])
+@app.route('/update_theme_suggestions',methods=['POST'])
 @auth_required()
-def update_theme_suggestions(user_id):
-    user = db_session.query(User).get(user_id)
+def update_theme_suggestions():
+    user = db_session.query(User).get(request.form['user_id'])
     setattr(user, 'theme_suggestions', request.form['theme_suggestions'])
     db_session.commit()
 
-    # Redirect the user back to the original URL
-    original_url = request.headers.get('Referer')
-    return redirect(original_url)
+    return "success"
 
 @app.route('/update_instrument_preferences/<int:instrument_id>',methods=['POST'])
 @auth_required()
