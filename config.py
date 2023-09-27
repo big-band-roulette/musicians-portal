@@ -42,7 +42,7 @@ class Config:
   SECURITY_CHANGEABLE = True
   SECURITY_RECOVERABLE = True # TODO This should be changed to true, when we have an email extension configured
   SECURITY_EMAIL_SENDER = "no-reply@bigbandroulette.com" # TODO this might not be the right setting...
-
+  SECURITY_RETURN_GENERIC_RESPONSES = True
 
   # mail setup
 
