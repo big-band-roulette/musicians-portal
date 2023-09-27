@@ -27,8 +27,8 @@
                 {% if event not in current_user.events %}
                   <button type="button"
                           class="btn btn-primary"
-                          data-toggle="modal"
-                          data-target="#confirmationModal{{ event.event_id }}">Join Pool</button>
+                          data-bs-toggle="modal"
+                          data-bs-target="#confirmationModal{{ event.event_id }}">Join Pool</button>
                 {% else %}
                   <form method='post'
                         action="{{ url_for('unregister', event_id=event.event_id) }}">
@@ -59,16 +59,14 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">Confirm Registration</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">{{ '×' }}</span>
-                </button>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
               </div>
+                <form method="post" action='{{ url_for("upcoming") }}'>
               <div class="modal-body">
                 Are you sure you are free at this time?
                 <p>{{ event.datetime.strftime("%d %B, %Y -  %I:%M %p") }}</p>
               </div>
               <div class="modal-footer">
-                <form method="post" action='{{ url_for("upcoming") }}'>
                   {{ form.hidden_tag() }}
                   <input type="hidden" name="event_id" value='{{ event.event_id }}'>
                   <button type="button"
