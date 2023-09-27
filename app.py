@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, jsonify, url_for, redirect,render_template, request, flash
 from flask_cors import CORS
 from flask_security import Security, roles_required,current_user, auth_required, \
