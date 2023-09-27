@@ -84,6 +84,7 @@ class AuditionSlot(Base):
 
     # Audition information – null if not booked
     instrument = Column(String(50))
+    level = Column(String(50))
 
 #* A table for all the events.
 class Event(Base):

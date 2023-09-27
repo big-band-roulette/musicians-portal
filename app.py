@@ -45,6 +45,15 @@ class ConfirmationForm(FlaskForm):
 @auth_required()
 def auditions():
     instruments = [instrument.__name__ for instrument in  Instrument.__subclasses__()]
+    levels = [
+        '1',
+        '1–2',
+        '2',
+        '2–3',
+        '3',
+        '3–4',
+        '4',
+    ]
 
     audition_sessions = db_session.query(AuditionSession).all()
     sessions_slots = [len(session.audition_slots) for session in audition_sessions]
@@ -63,6 +72,7 @@ def auditions():
     return render_template('auditions.html', 
                            audition_sessions_with_availability=audition_sessions_with_availability, 
                            instruments = instruments,
+                           levels = levels,
                            )
 
 @app.route('/toggle_notifications/<int:user_id>',methods=['POST'])
@@ -169,12 +179,14 @@ def update_signup():
             return redirect(url_for('auditions'))
         current_user.audition_slots.append(audition_slot)
         audition_slot.instrument = request.form['instrument']
+        audition_slot.level = request.form['level']
     else:
         # TODO: these should probably be separate routes
         #remove the signup
         current_user.audition_slots.remove(audition_slot)
         # TODO: This is clunky and error-prone. Replace with assocation table
         audition_slot.instrument = None
+        audition_slot.grade = None
     db_session.commit()
 
     return redirect(url_for('auditions'))
