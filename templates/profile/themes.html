@@ -1,0 +1,38 @@
+<h3 class="mb-2 mt-5">Theme Suggestions</h3>
+<p>Suggest themes and setlist ideas that you would like to see us play. If we select a theme that is similar to your
+    suggestion, you will be more likely to be selected for the band</p>
+<br>
+<script>
+    $(document).ready(function () {
+        $("#theme_suggestions").keyup(function () {
+            $("#theme_suggestions_button").removeAttr('disabled');
+        });
+
+        $('#theme_suggestions_form').submit(function (event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '/update_theme_suggestions',
+                data: $('form').serialize(),
+                success: function () {
+                    $('#theme_suggestions_button').attr('disabled', 'disabled');
+                },
+                error: function () {
+                    alert('An error occurred while updating your theme suggestions. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+<form id="theme_suggestions_form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="user_id" value="{{ current_user.id }}">
+    <div class="form-group">
+        <textarea class="form-control mb-4" id="theme_suggestions" name="theme_suggestions"
+            rows="3">{{ current_user.theme_suggestions }}</textarea>
+    </div>
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary btn-block mb-4" disabled
+            id="theme_suggestions_button">Save</button>
+    </div>
+</form>

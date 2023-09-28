@@ -75,18 +75,17 @@ def auditions():
                            levels = levels,
                            )
 
-@app.route('/toggle_notifications/<int:user_id>',methods=['POST'])
+@app.route('/toggle_notifications', methods=['POST'])
 @auth_required()
-def toggle_notifications(user_id):
-    user = db_session.query(User).get(user_id)
+def toggle_notifications():
+    print("Here")
+    user = db_session.query(User).get(request.form['user_id'])
     notification_type = request.form['form_type']
     val = True if notification_type in request.form else False
     setattr(user, notification_type, val)
     db_session.commit()
 
-    # Redirect the user back to the original URL
-    original_url = request.headers.get('Referer')
-    return redirect(original_url)
+    return "success"
 
 @app.route('/update_theme_suggestions',methods=['POST'])
 @auth_required()

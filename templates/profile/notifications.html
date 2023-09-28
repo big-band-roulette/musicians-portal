@@ -1,0 +1,77 @@
+<h3 class="mb-2 mt-5">Notification Preferences</h3>
+<p>Select when you will recieve email notifications from the portal.</p>
+<br>
+<div class="list-group mb-5 shadow">
+  <div class="list-group-item">
+    <div class="row align-items-center">
+      <div class="col">
+        <strong class="mb-0">New Event Notications</strong>
+        <p class="text-muted mb-0">Recieve a notification whenever we announce a new event.</p>
+      </div>
+      <div class="col-auto">
+        <form class="notifications-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="user_id" value="{{ current_user.id }}">
+          <input type="hidden" name="form_type" value="notify_about_new_gigs">
+          <div class="form-check form-switch">
+            <input type="checkbox" role="switch" class="form-check-input" name="notify_about_new_gigs"
+              id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }}
+              onchange="this.form.submit()">
+            <label class="form-check-label" for="notify_about_new_gigs"></label>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="list-group-item">
+    <div class="row align-items-center">
+      <div class="col">
+        <strong class="mb-0">New Audition Slots Notications</strong>
+        <p class="text-muted mb-0">Recieve a notification whenever we open new audition slots.</p>
+      </div>
+      <div class="col-auto">
+        <form class="notifications-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="user_id" value="{{ current_user.id }}">
+          <input type="hidden" name="form_type" value="notify_about_auditions">
+          <div class="form-check form-switch">
+            <input type="checkbox" role="switch" class="form-check-input" name="notify_about_auditions"
+              id="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }}
+              onchange="this.form.submit()">
+            <label class="form-check-label" for="notify_about_auditions"></label>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="list-group-item">
+    <div class="row align-items-center">
+      <div class="col">
+        <strong class="mb-0">Drop-Out Notications</strong>
+        <p class="text-muted mb-0">Recieve a notification whenever we open new audition slots.</p>
+      </div>
+      <div class="col-auto">
+        <form class="notifications-form" id="form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="user_id" value="{{ current_user.id }}">
+          <input type="hidden" name="form_type" value="notify_about_drop_outs">
+          <div class="form-check form-switch">
+            <input type="checkbox" role="switch" class="form-check-input" name="notify_about_drop_outs"
+              id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }}
+              onchange="this.form.submit()">
+            <label class="form-check-label" for="notify_about_drop_outs"></label>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('.form-check-input').change(function (event) {
+      event.preventDefault();
+      alert($(this.form).serialize());
+    });
+  });
+</script>
