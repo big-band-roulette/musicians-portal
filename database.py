@@ -4,14 +4,27 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import Base
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Database configuration
+db_local = os.environ.get('DB_LOCAL')
 db_user = os.environ.get('DB_USER')
 db_password = '' if os.environ.get('DB_HOST') == 'localhost' else os.environ.get('DB_PASSWORD') 
 db_name = os.environ.get('DB_NAME')
 db_host = os.environ.get('DB_HOST')  # Usually 'localhost' or an IP address
 
 # Create the engine
-engine = create_engine(f"mysql+mysqlconnector://{db_user}:{db_password}@{db_host}/{db_name}",echo=False)
+if db_local == 'yes':
+    engine = create_engine(f"sqlite:///database.db", echo=False)
+elif db_local == 'no':
+    engine = create_engine(
+        f"mysql+mysqlconnector://{db_user}:{db_password}@{db_host}/{db_name}",
+        echo=False
+    )
+else:
+    raise ValueError("DB_LOCAL must be 'yes' or 'no'")
+    
 
 #engine = create_engine('sqlite:///database.db')
 db_session = scoped_session(sessionmaker(autocommit=False,
