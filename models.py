@@ -145,7 +145,9 @@ class Instrument(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     takes_solos=Column(Boolean, nullable=False, default=False)
+    level = Column(String(50), nullable=False)
     users = relationship('User',back_populates="instruments")
+
     name = Column(String(50))
     __mapper_args__ = {
         "polymorphic_identity": "instrument",
