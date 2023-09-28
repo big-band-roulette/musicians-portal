@@ -122,17 +122,17 @@ def add_simulated_data(app,db_session):
 
 
     instruments = [
-        Trombone(user_id=1, seat_trombone_1=True, takes_solos=True),
-        Saxophone(user_id=1, seat_alto_1=True, takes_solos=True),
-        Saxophone(user_id=2, seat_alto_1=True, takes_solos=False),
-        Guitar(user_id=2, takes_solos=True),
-        Drums(user_id=2, takes_solos=False),
-        Piano(user_id=2, takes_solos=True),
-        Percussion(user_id=2, takes_solos=False),
-        Guitar(user_id=1, takes_solos=True),
-        Drums(user_id=1, takes_solos=False, dbl_bongos=True),
-        Piano(user_id=1, takes_solos=True),
-        Percussion(user_id=1, takes_solos=False, dbl_bongos=True),
+        Trombone(user_id=1, level='3', seat_trombone_1=True, takes_solos=True),
+        Saxophone(user_id=1, level='3', seat_alto_1=True, takes_solos=True),
+        Saxophone(user_id=2, level='3', seat_alto_1=True, takes_solos=False),
+        Guitar(user_id=2, level='3', takes_solos=True),
+        Drums(user_id=2, level='3', takes_solos=False),
+        Piano(user_id=2, level='3', takes_solos=True),
+        Percussion(user_id=2, level='3', takes_solos=False),
+        Guitar(user_id=1, level='3', takes_solos=True),
+        Drums(user_id=1, level='3', takes_solos=False, dbl_bongos=True),
+        Piano(user_id=1, level='3', takes_solos=True),
+        Percussion(user_id=1, level='3', takes_solos=False, dbl_bongos=True),
     ]
     for instrument in instruments:
         db_session.add(instrument)
