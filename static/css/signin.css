@@ -25,3 +25,14 @@
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.form-signin input[type="password"].password_initial {
+  margin-bottom: -1px;
+  border-radius: 0;
+}
+
+.form-signin .password_confirm {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}

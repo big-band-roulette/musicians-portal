@@ -1,8 +1,8 @@
 {# ! Important: These have been copied from the underlying template in flask-security-too. EDIT WITH CARE #}
 {% extends "./base.html" %}
-{% from "security/_macros.html" import render_field_with_errors, render_field, render_form_errors %}
+{% from "security/_macros.html" import render_field_errors, render_field_with_errors, render_field, render_form_errors %}
 {% block content %}
-  {% include "security/_messages.html" %}
+  {# {% include "security/_messages.html" %}
   <h1>{{ _fsdomain("Register") }}</h1>
   <form action="{{ url_for_security("register") }}"
         method="post"
@@ -17,5 +17,61 @@
     {% endif %}
     {{ render_field(register_user_form.submit) }}
   </form>
+{% include "security/_menu.html" %} #}
+  <!-- Custom styles for this template -->
+  <link href="../static/css/signin.css" rel="stylesheet">
+  {% include "security/_messages.html" %}
+  <main class="form-signin">
+    <form action="{{ url_for_security("register") }}"
+          method="post"
+          name="register_user_form">
+      {{ register_user_form.hidden_tag() }}
+      {{ render_form_errors(register_user_form) }}
+      <h1 class="h3 mb-3 fw-normal">Register</h1>
+      <!-- Email Input Field -->
+      <div class="form-floating">
+        <input type="email"
+               class="form-control"
+               id="email"
+               name="email"
+               placeholder="name@example.com">
+        <label for="email">Email address</label>
+      </div>
+      <!-- Password Input Field -->
+      <div class="form-floating">
+        <input type="password"
+               class="form-control password_initial"
+               id="password"
+               name="password"
+               placeholder="Password"
+               required>
+        <label for="password">Password</label>
+        {% if register_user_form.password.errors %}
+          <ul>
+            {% for error in register_user_form.password.errors %}<li class="fs-error-msg">{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      {% if register_user_form.password_confirm %}
+        <div class="form-floating">
+          <input type="password"
+                 class="form-control password_confirm"
+                 id="password_confirm"
+                 name="password_confirm"
+                 placeholder="Password"
+                 required>
+          <label for="password">Retype password</label>
+        </div>
+      {% endif %}
+      {% if register_user_form.password_confirm.errors %}
+        <ul>
+          {% for error in register_user_form.password_confirm.errors %}<li class="fs-error-msg">{{ error }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+      <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+      {# <p class="mt-5 mb-3 text-muted">© 2017–2021</p> #}
+      {{ render_field_errors(register_user_form.csrf_token) }}
+    </form>
+  </main>
   {% include "security/_menu.html" %}
 {% endblock content %}

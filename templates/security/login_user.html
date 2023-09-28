@@ -38,7 +38,7 @@
       <!-- Remember Me Checkbox -->
       <div class="form-check mb-3 checkbox">{{ login_user_form.remember() |safe }} Remember me</div>
       <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-      <p class="mt-5 mb-3 text-muted">© 2017–2021</p>
+      {# <p class="mt-5 mb-3 text-muted">© 2017–2021</p> #}
       {{ render_field_errors(login_user_form.csrf_token) }}
     </form>
   </main>
