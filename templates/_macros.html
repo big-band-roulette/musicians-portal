@@ -1,0 +1,8 @@
+{% macro render_item_with_notifications(panel_name, panel_link_name, notification_num) %}
+  <li class="nav-item active notificationBox">
+    <a class="nav-link" href='{{ url_for(panel_link_name) }}'>
+      <span>{{ panel_name }}</span>
+      {% if notification_num != 0 %}<div class="notifyBadge">{{ notification_num }}</div>{% endif %}
+    </a>
+  </li>
+{% endmacro %}

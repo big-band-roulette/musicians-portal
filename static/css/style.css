@@ -148,3 +148,22 @@ button.acc-btn {
   align-items: center;
   grid-gap: 10px;
 }
+
+.notificationBox {
+  position: relative;
+}
+
+.notificationBox .notifyBadge {
+  position: absolute;
+  display: flex; /* Use flexbox to vertically center content */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  top: -3px;
+  right: -3px;
+  border-radius: 50%;
+  background: red;
+  color: white;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+}
