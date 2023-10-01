@@ -105,7 +105,7 @@ def update_theme_suggestions():
 @auth_required()
 def update_instrument_preferences(instrument_id):
     instrument = db_session.query(Instrument).get(instrument_id)
-    if not current_user in instrument.users:  # temporary hack whilst instruments has one-to-many model
+    if not current_user == instrument.users:  # ignore wierd naming convention
         return "unauthorized", 401
     attribute = request.form['attr']
     val = True if attribute in request.form else False
