@@ -79,6 +79,8 @@ def auditions():
 @auth_required()
 def toggle_notifications(user_id):
     user = db_session.query(User).get(user_id)
+    if not user == current_user:
+        return "unauthorized", 401
     notification_type = request.form['form_type']
     val = True if notification_type in request.form else False
     setattr(user, notification_type, val)
@@ -92,6 +94,8 @@ def toggle_notifications(user_id):
 @auth_required()
 def update_theme_suggestions():
     user = db_session.query(User).get(request.form['user_id'])
+    if not user == current_user:
+        return "unauthorized", 401
     setattr(user, 'theme_suggestions', request.form['theme_suggestions'])
     db_session.commit()
 
@@ -101,6 +105,8 @@ def update_theme_suggestions():
 @auth_required()
 def update_instrument_preferences(instrument_id):
     instrument = db_session.query(Instrument).get(instrument_id)
+    if not instrument.user == current_user:
+        return "unauthorized", 401
     attribute = request.form['attr']
     val = True if attribute in request.form else False
     setattr(instrument, attribute, val)
