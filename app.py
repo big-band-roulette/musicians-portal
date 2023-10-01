@@ -78,7 +78,6 @@ def auditions():
 @app.route('/toggle_notifications', methods=['POST'])
 @auth_required()
 def toggle_notifications():
-    print("Here")
     user = db_session.query(User).get(request.form['user_id'])
     notification_type = request.form['form_type']
     val = True if notification_type in request.form else False

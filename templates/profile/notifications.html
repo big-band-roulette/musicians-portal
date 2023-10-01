@@ -15,8 +15,7 @@
           <input type="hidden" name="form_type" value="notify_about_new_gigs">
           <div class="form-check form-switch">
             <input type="checkbox" role="switch" class="form-check-input" name="notify_about_new_gigs"
-              id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }}
-              onchange="this.form.submit()">
+              id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }}>
             <label class="form-check-label" for="notify_about_new_gigs"></label>
           </div>
         </form>
@@ -36,8 +35,7 @@
           <input type="hidden" name="form_type" value="notify_about_auditions">
           <div class="form-check form-switch">
             <input type="checkbox" role="switch" class="form-check-input" name="notify_about_auditions"
-              id="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }}
-              onchange="this.form.submit()">
+              id="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }}>
             <label class="form-check-label" for="notify_about_auditions"></label>
           </div>
         </form>
@@ -57,8 +55,7 @@
           <input type="hidden" name="form_type" value="notify_about_drop_outs">
           <div class="form-check form-switch">
             <input type="checkbox" role="switch" class="form-check-input" name="notify_about_drop_outs"
-              id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }}
-              onchange="this.form.submit()">
+              id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }}>
             <label class="form-check-label" for="notify_about_drop_outs"></label>
           </div>
         </form>
@@ -71,7 +68,17 @@
   $(document).ready(function () {
     $('.form-check-input').change(function (event) {
       event.preventDefault();
-      alert($(this.form).serialize());
+      form = $(this.form);
+      $.ajax({
+        type: 'POST',
+        url: '/toggle_notifications',
+        data: form.serialize(),
+        success: function () {},
+        error: function (xhr, status, error) {
+          var err = eval("(" + xhr.responseText + ")");
+          alert(err.Message);
+        }
+      });
     });
   });
 </script>
