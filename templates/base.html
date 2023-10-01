@@ -16,7 +16,7 @@
     <!-- Add icon library -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href='{{ url_for("/static/css/style.css") }}'>
+    <link rel="stylesheet" href='{{ url_for("static",filename="css/style.css") }}'>
     <title>
       {% block title %}
         Big Band Roulette
@@ -37,7 +37,7 @@
     <div class="flex-grow-1">
       <nav class="navbar navbar-expand-md navbar-light bg-light">
         <div class="container-fluid">
-          <a class="navbar-brand" href='{{ url_for("/") }}'>
+          <a class="navbar-brand" href='{{ url_for("index") }}'>
             <img src="{{ url_for('static',filename='images/navbar_logo.png') }}"
                  height="50"
                  width="50"
