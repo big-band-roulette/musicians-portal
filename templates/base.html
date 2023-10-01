@@ -17,7 +17,7 @@
     <!-- Add icon library -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href='{{ url_for("/static/css/style.css") }}'>
+    <link rel="stylesheet" href='{{ url_for("static",filename="css/style.css") }}'>
     <title>
       {% block title %}
         Big Band Roulette
@@ -38,7 +38,7 @@
     <div class="flex-grow-1">
       <nav class="navbar navbar-expand-md navbar-light bg-light">
         <div class="container-fluid">
-        <a class="navbar-brand" href='{{ url_for("/") }}'>
+        <a class="navbar-brand" href='{{ url_for("index") }}'>
           <img src="{{ url_for('static',filename='images/navbar_logo.png') }}"
                height="50"
                width="50"
@@ -60,6 +60,23 @@
               {{ render_item_with_notifications("Events","upcoming",0) }}
               {{ render_item_with_notifications("Profile","profile",1) }}
               {% if current_user.has_role("admin") %}
+                  <li class="nav-item active">
+                    <a class="nav-link" href='{{ url_for("adminInterface") }}'>Admin</a>
+                  </li>
+                {% endif %}
+              </ul>
+            {% endif %}
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href='{{ url_for("security.login") }}'>
+                  {% if current_user.is_authenticated %}
+                    {{ current_user.email }}
+                  {% else %}
+                    Login
+                  {% endif %}
+                </a>
+              </li>
+              {% if current_user.is_authenticated %}
                 <li class="nav-item active">
                   <a class="nav-link" href='{{ url_for("security.logout") }}'>Logout</a>
                 </li>
