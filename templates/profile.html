@@ -1,192 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Profile Page</h1>
-  {% if current_user.is_authenticated %}
-    <!--- Instruments --->
-    <h3 class="mb-2 mt-5">Instrument Preferences</h3>
-    <p>Specify your playing preferences for each instrument you have auditioned for.</p>
-    {% if current_user.instruments != [] %}
-      <ul>
-        {% for instrument in current_user.instruments %}
-          <div class="card my-3">
-            <h5 class="card-header">{{ instrument.name|title }} (Level = {{ instrument.level }})</h5>
-            <div class="card-body">
-              <!-- Seat Preferences --->
-              <h5>Seat Preferences</h5>
-              {% if instrument.has_seats() %}
-                <ul class="list-group list-group-horizontal-md">
-                  {% for attr in instrument.get_instrument_attributes() if attr.key.startswith('seat') %}
-                    <li class="list-group-item">
-                      <form method="post"
-                            action='{{ url_for("update_instrument_preferences",instrument_id=instrument.id) }}'>
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="attr" value="{{ attr.key }}">
-                        <input class="form-check-input me-1" type="checkbox" name="{{ attr.key }}" id="{{ attr.key }}" {{ 'checked' if instrument[attr.key] else '' }} onchange="this.form.submit()">
-                        <label class="form-check-label" for="{{ attr.key }}">{{ attr.key[5:]|replace('_', ' ') |title }}</label>
-                      </form>
-                    </li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-                <p>N/A</p>
-              {% endif %}
-              <!-- Doubling --->
-              <h5 class="mt-3">Doubling</h5>
-              {% if instrument.has_doublings() %}
-                <ul class="list-group list-group-horizontal-md">
-                  {% for attr in instrument.get_instrument_attributes() if attr.key.startswith('dbl') %}
-                    <li class="list-group-item">
-                      <form method="post"
-                            action='{{ url_for("update_instrument_preferences",instrument_id=instrument.id) }}'>
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="attr" value="{{ attr.key }}">
-                        <input class="form-check-input me-1" type="checkbox" name="{{ attr.key }}" id="{{ attr.key }}" {{ 'checked' if instrument[attr.key] else '' }} onchange="this.form.submit()">
-                        <label class="form-check-label" for="{{ attr.key }}">{{ attr.key[4:]|replace('_', ' ') |title }}</label>
-                      </form>
-                    </li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-                <p>N/A</p>
-              {% endif %}
-            </div>
-          </div>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>
-        It looks like you haven't auditioned for any instruments yet. You can book an audition slot from the Auditions tab.
-      </p>
-    {% endif %}
-    <hr class="my-4" />
-    <!--- Notifications-->
-    <h3 class="mb-2 mt-5">Notification Preferences</h3>
-    <p>Select when you will recieve email notifications from the portal.</p>
-    <br>
-    <div class="list-group mb-5 shadow">
-      <div class="list-group-item">
-        <div class="row align-items-center">
-          <div class="col">
-            <strong class="mb-0">New Event Notications</strong>
-            <p class="text-muted mb-0">Recieve a notification whenever we announce a new event.</p>
-          </div>
-          <div class="col-auto">
-            <form method="post"
-                  action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="hidden" name="form_type" value="notify_about_new_gigs">
-              <div class="form-check form-switch">
-                <input type="checkbox" role="switch" class="form-check-input" name="notify_about_new_gigs" id="notify_about_new_gigs" {{ 'checked' if current_user.notify_about_new_gigs else '' }} onchange="this.form.submit()">
-                <label class="form-check-label" for="notify_about_new_gigs"></label>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <div class="list-group-item">
-        <div class="row align-items-center">
-          <div class="col">
-            <strong class="mb-0">New Audition Slots Notications</strong>
-            <p class="text-muted mb-0">Recieve a notification whenever we open new audition slots.</p>
-          </div>
-          <div class="col-auto">
-            <form method="post"
-                  action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="hidden" name="form_type" value="notify_about_auditions">
-              <div class="form-check form-switch">
-                <input type="checkbox" role="switch" class="form-check-input" name="notify_about_auditions" id="notify_about_auditions" {{ 'checked' if current_user.notify_about_auditions else '' }} onchange="this.form.submit()">
-                <label class="form-check-label" for="notify_about_auditions"></label>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <div class="list-group-item">
-        <div class="row align-items-center">
-          <div class="col">
-            <strong class="mb-0">Drop-Out Notications</strong>
-            <p class="text-muted mb-0">Recieve a notification whenever we open new audition slots.</p>
-          </div>
-          <div class="col-auto">
-            <form method="post"
-                  action='{{ url_for("toggle_notifications",user_id=current_user.id) }}'>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="hidden" name="form_type" value="notify_about_drop_outs">
-              <div class="form-check form-switch">
-                <input type="checkbox" role="switch" class="form-check-input" name="notify_about_drop_outs" id="notify_about_drop_outs" {{ 'checked' if current_user.notify_about_drop_outs else '' }} onchange="this.form.submit()">
-                <label class="form-check-label" for="notify_about_drop_outs"></label>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr class="my-4" />
-    <!-- Themes --->
-    <h3 class="mb-2 mt-5">Theme Suggestions</h3>
-    <p>
-      Suggest themes and setlist ideas that you would like to see us play. If we select a theme that is similar to your suggestion, you will be more likely to be selected for the band
-    </p>
-    <br>
-    <script>
-      $(document).ready(function() {
-        $("#theme_suggestions").keyup(function() {
-            $("#theme_suggestions_button").removeAttr('disabled');
-        });
-
-         $('#theme_suggestions_form').submit(function(event) {
-            event.preventDefault();
-            $.ajax({
-               type: 'POST',
-               url: '/update_theme_suggestions',
-               data: $('form').serialize(),
-               success: function() {
-                  $('#theme_suggestions_button').attr('disabled', 'disabled');
-               },
-               error: function() {
-                  $('#theme_suggestions').val('Error!');
-                  alert('An error occurred while updating your theme suggestions. Please try again.');
-               }
-            });
-         });
-      });
-    </script>
-    <form id="theme_suggestions_form"">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="user_id" value="{{ current_user.id }}">
-      <div class="form-group">
-        <textarea class="form-control mb-4"
-                  id="theme_suggestions"
-                  name="theme_suggestions"
-                  rows="3">{{ current_user.theme_suggestions }}</textarea>
-      </div>
-      <div class="d-grid gap-2">
-        <button type="submit"
-                class="btn btn-primary btn-block mb-4"
-                disabled
-                id="theme_suggestions_button">Save</button>
-      </div>
-    </form>
-    <hr class="my-4" />
-    <h3>Details:</h3>
-    <ul>
-      <li>
-        Password:
-        <a href='{{ url_for("security.change_password") }}'>click here to change password</a>
-      </li>
-      <li>
-        Email:
-        <p>{{ current_user.email }}</p>
-      </li>
-      <!-- Add more list items as needed -->
-    </ul>
-    <h3>Roles:</h3>
-    <ul>
-      {% for role in current_user.band_roles %}<li class="text-capitalize">{{ role.role_type }}</li>{% endfor %}
-    </ul>
-  {% else %}
-    Login
-  {% endif %}
-  <!-- <img src="{{ url_for('static', filename='images/logo_colour.svg') }}" class="image" /> -->
+<h1>Profile Page</h1>
+{% if current_user.is_authenticated %}
+<ul class="nav nav-tabs nav-fill" id="profile-tabs" role="tablist">
+  {% set tab_names = ['notifications', 'instruments', 'themes', 'details'] %}
+  {% for tab_name in tab_names %}
+  <li class="nav-item" role="presentation">
+    <button 
+      class="nav-link {% if loop.first %}active{% endif %}" id="{{ tab_name }}-tab"
+      data-bs-toggle="tab"
+      data-bs-target="#{{ tab_name }}"
+      type="button"
+      role="tab"
+      aria-controls="{{ tab_name }}"
+      aria-selected="true">
+      {{tab_name|title }}
+    </button>
+  </li>
+  {% endfor %}
+</ul>
+<div class="tab-content" id="profile-tabs-content">
+  {% for tab_name in tab_names %}
+  <div 
+    class="tab-pane fade show {% if loop.first %}active{% endif %}"
+    id="{{ tab_name }}" 
+    role="tabpanel"
+    aria-labelledby="{{ tab_name }}-tab">
+    {% include "profile/" + tab_name + ".html" %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+Login
+{% endif %}
 {% endblock content %}
