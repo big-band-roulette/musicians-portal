@@ -56,3 +56,6 @@ class Config:
 
   # CORS accept websites for API requests
   CORS_ORIGINS = [os.environ.get("CORS_ORIGINS")]
+
+  # Secure cookies - https://blog.miguelgrinberg.com/post/cookie-security-for-flask-applications
+  SESSION_COOKIE_SECURE = True
