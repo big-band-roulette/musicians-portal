@@ -16,9 +16,9 @@ class Config:
 
   #allow user registration
   SECURITY_REGISTERABLE = True 
-  SECURITY_PASSWORD_CHECK_BREACHED = 'strict'
-  SECURITY_PASSWORD_COMPLEXITY_CHECKER = 'zxcvbn'
-  SECURITY_ZXCBN_MINIMUM = 3
+  SECURITY_PASSWORD_CHECK_BREACHED = None
+  SECURITY_PASSWORD_COMPLEXITY_CHECKER = None
+  # SECURITY_ZXCVBN_MINIMUM_SCORE = 3
 
   #force email confirmation on login
   SECURITY_CONFIRMABLE = False
@@ -56,3 +56,6 @@ class Config:
 
   # CORS accept websites for API requests
   CORS_ORIGINS = [os.environ.get("CORS_ORIGINS")]
+
+  # Secure cookies - https://blog.miguelgrinberg.com/post/cookie-security-for-flask-applications
+  SESSION_COOKIE_SECURE = True

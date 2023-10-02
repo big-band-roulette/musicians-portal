@@ -1,0 +1,18 @@
+<h3 class="mb-2 mt-5">Details</h3>
+<p>Miscellaneous security and profile settings.</p>
+<hr>
+<ul>
+    <li>
+        Password:
+        <a href='{{ url_for("security.change_password") }}'>click here to change password</a>
+    </li>
+    <li>
+        Email:
+        <p>{{ current_user.email }}</p>
+    </li>
+    <!-- Add more list items as needed -->
+</ul>
+<h3>Roles:</h3>
+<ul>
+    {% for role in current_user.band_roles %}<li class="text-capitalize">{{ role.role_type }}</li>{% endfor %}
+</ul>

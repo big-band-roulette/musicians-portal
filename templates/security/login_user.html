@@ -1,36 +1,46 @@
-{# ! Important: These have been copied from the underlying template in flask-security-too. EDIT WITH CARE #}
-{% extends "./base.html" %}
+{% extends "base.html" %}
 {% from "security/_macros.html" import render_field_with_errors, render_field, render_field_errors, render_form_errors %}
 {% block content %}
+  <!-- Custom styles for this template -->
+  <link href="../static/css/signin.css" rel="stylesheet">
   {% include "security/_messages.html" %}
-  <h1>{{ _fsdomain("Login") }}</h1>
-  <form action="{{ url_for_security("login") }}"
-        method="post"
-        name="login_user_form">
-    {{ login_user_form.hidden_tag() }}
-    {{ render_form_errors(login_user_form) }}
-    {% if "email" in identity_attributes %}{{ render_field_with_errors(login_user_form.email) }}{% endif %}
-    {% if login_user_form.username and "username" in identity_attributes %}
-      {% if "email" in identity_attributes %}<h3>{{ _fsdomain("or") }}</h3>{% endif %}
-      {{ render_field_with_errors(login_user_form.username) }}
-    {% endif %}
-    <div class="fs-gap">{{ render_field_with_errors(login_user_form.password) }}</div>
-    {{ render_field_with_errors(login_user_form.remember) }}
-    {{ render_field_errors(login_user_form.csrf_token) }}
-    {{ render_field(login_user_form.submit) }}
-  </form>
-  {% if security.webauthn %}
-    <hr class="fs-gap">
-    <h2>{{ _fsdomain("Use WebAuthn to Sign In") }}</h2>
-    <div>
-      <form method="get" id="wan-signin-form" name="wan_signin_form">
-        <input id="wan_signin"
-               name="wan_signin"
-               type="submit"
-               value="{{ _fsdomain("Sign in with WebAuthn") }}"
-               formaction="{{ url_for_security("wan_signin") }}">
-      </form>
-    </div>
-  {% endif %}
-  {% include "security/_menu.html" %}
+  <main class="form-signin">
+    <form action="{{ url_for_security("login") }}"
+          method="post"
+          name="login_user_form">
+      {{ login_user_form.hidden_tag() }}
+      {{ render_form_errors(login_user_form) }}
+      <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+      <!-- Email Input Field -->
+      <div class="form-floating">
+        <input type="email"
+               class="form-control"
+               id="email"
+               name="email"
+               placeholder="name@example.com">
+        <label for="email">Email address</label>
+      </div>
+      <!-- Password Input Field -->
+      <div class="form-floating">
+        <input type="password"
+               class="form-control"
+               id="password"
+               name="password"
+               placeholder="Password"
+               required>
+        <label for="password">Password</label>
+        {% if login_user_form.password.errors %}
+          <ul>
+            {% for error in login_user_form.password.errors %}<li class="fs-error-msg">{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      <!-- Remember Me Checkbox -->
+      <div class="form-check mb-3 checkbox">{{ login_user_form.remember() |safe }} Remember me</div>
+      <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+      {# <p class="mt-5 mb-3 text-muted">© 2017–2021</p> #}
+      {{ render_field_errors(login_user_form.csrf_token) }}
+    </form>
+  </main>
+{% include "security/_menu.html" %}
 {% endblock content %}

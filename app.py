@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from flask import Flask, jsonify, url_for, redirect,render_template, request, flash
+from flask import Flask, jsonify, url_for, redirect,render_template, request, flash, abort
 from flask_cors import CORS
 from flask_security import Security, roles_required,current_user, auth_required, \
      SQLAlchemySessionUserDatastore
@@ -75,40 +75,43 @@ def auditions():
                            levels = levels,
                            )
 
-@app.route('/toggle_notifications/<int:user_id>',methods=['POST'])
+@app.route('/toggle_notifications', methods=['POST'])
 @auth_required()
-def toggle_notifications(user_id):
-    user = db_session.query(User).get(user_id)
+def toggle_notifications():
+    user = db_session.query(User).get(request.form['user_id'])
+    if not user == current_user:
+        return "unauthorized", 401
     notification_type = request.form['form_type']
     val = True if notification_type in request.form else False
     setattr(user, notification_type, val)
     db_session.commit()
 
-    # Redirect the user back to the original URL
-    original_url = request.headers.get('Referer')
-    return redirect(original_url)
+    return "success"
 
 @app.route('/update_theme_suggestions',methods=['POST'])
 @auth_required()
 def update_theme_suggestions():
     user = db_session.query(User).get(request.form['user_id'])
+    if not user == current_user:
+        return "unauthorized", 401
     setattr(user, 'theme_suggestions', request.form['theme_suggestions'])
     db_session.commit()
 
     return "success"
 
-@app.route('/update_instrument_preferences/<int:instrument_id>',methods=['POST'])
+@app.route('/update_instrument_preferences',methods=['POST'])
 @auth_required()
-def update_instrument_preferences(instrument_id):
+def update_instrument_preferences():
+    instrument_id = request.form['instrument_id']
     instrument = db_session.query(Instrument).get(instrument_id)
+    if not current_user == instrument.users:  # ignore wierd naming convention
+        return "unauthorized", 401
     attribute = request.form['attr']
-    val = True if attribute in request.form else False
+    val = attribute in request.form.to_dict(flat=True)
     setattr(instrument, attribute, val)
     db_session.commit()
 
-    # Redirect the user back to the original URL
-    original_url = request.headers.get('Referer')
-    return redirect(original_url)
+    return "success"
 
 @app.route('/index.html')
 @app.route('/')
