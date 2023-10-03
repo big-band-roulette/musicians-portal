@@ -6,8 +6,8 @@ import datetime
 from models import AuditionSlot, AuditionSession
 
 MD = "Tim Hargreaves"
-START_TIME = datetime.datetime(2021, 9, 14, 14, 0, 0)
-END_TIME = datetime.datetime(2021, 9, 14, 18, 0, 0)
+START_TIME = datetime.datetime(2023, 10, 8, 9, 0, 0)
+END_TIME = datetime.datetime(2023, 10, 8, 18, 0, 0)
 LOCATION = "Band Room, St John's College"
 DIRECTIONS = "Wait at the Cripps porter's lodge (https://maps.app.goo.gl/2vF411Lt65LvtCj66), which you can access via Northampton Street or by walking through the college. We will come up from the band room to collect you just before your audition slot."
 
@@ -21,7 +21,6 @@ def commitData(session,className,data):
 
 if __name__ == "__main__":
   with app.app_context():
-    init_db(app)
 
     # Create audition sessions
     mapped_data = [
@@ -30,6 +29,7 @@ if __name__ == "__main__":
             "start_time": START_TIME,
             "end_time": END_TIME,
             "location": LOCATION,
+            "directions": DIRECTIONS,
         }
     ]
     commitData(db_session, AuditionSession, mapped_data)
@@ -44,5 +44,5 @@ if __name__ == "__main__":
                 AuditionSlot(start_time=start_time, end_time=end_time)
             )
             start_time += SLOT_OFFSET
-            end_time += SLOT_LENGTH
+            end_time = start_time + SLOT_LENGTH
     db_session.commit()
