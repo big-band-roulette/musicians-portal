@@ -27,6 +27,8 @@
             <div class="d-flex w-100 justify-content-between">
               <ul class="mb-0">
                 <li>Location: {{ audition_slot.audition_session.location }}</li>
+                <li>Directions: {{ audition_slot.audition_session.directions }}</li>
+                <li>MD: {{ audition_slot.audition_session.musical_director }} </li>
                 <li>Instrument: {{ audition_slot.instrument }}</li>
                 <li>Level: {{ audition_slot.level }}</li>
               </ul>
@@ -84,6 +86,8 @@
                     Time: {{ audition_session.start_time.strftime("%I:%M %p") }} — {{ audition_session.end_time.strftime("%I:%M %p") }}
                   </li>
                   <li>Location: {{ audition_session.location }}</li>
+                  <li>Directions: {{ audition_session.directions }}</li>
+                  <li>MD: {{ audition_session.musical_director }}</li>
                 </ul>
               </div>
             </div>

@@ -65,6 +65,7 @@ class AuditionSession(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     musical_director = Column(String(100))
     location = Column(String(100))
+    directions = Column(String(1000))
     start_time = Column(DateTime())
     end_time = Column(DateTime())
     audition_slots = relationship('AuditionSlot', back_populates='audition_session')
